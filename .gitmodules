@@ -1,0 +1,3 @@
+[submodule "Src/ThirdParty/Amd"]
+	path = Src/ThirdParty/Amd
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/ADLX

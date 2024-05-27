@@ -1,0 +1,8 @@
+{
+  "Description": "Displays the current GPU usage.",
+  "Name": "GPU",
+  "com.nthompson.gpu.gpu": {
+    "Name": "GPU",
+    "Tooltip": "This action displays the GPU usage"
+  }
+}
