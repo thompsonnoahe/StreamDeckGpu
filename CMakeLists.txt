@@ -4,8 +4,6 @@ project(com.nthompson.gpu VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 20)
 
-include(FetchContent)
-
 find_package(CUDAToolkit)
 find_package(GLEW)
 find_package(OpenGL)
@@ -15,8 +13,6 @@ include("Src/ThirdParty/StreamDeckSDK.cmake")
 set(THIRD_PARTY_AMD_INCLUDE Src/ThirdParty/Amd/SDK/ADLXHelper/Windows/Cpp/ADLXHelper.h)
 set(THIRD_PARTY_AMD_SRC Src/ThirdParty/Amd/SDK/ADLXHelper/Windows/Cpp/ADLXHelper.cpp)
 set(THIRD_PARTY_AMD_SRC_WIN Src/ThirdParty/Amd/SDK/Platform/Windows/WinAPIs.cpp)
-
-message(STATUS ${THIRD_PARTY_AMD})
 
 add_executable(gpu
         Src/main.cpp
