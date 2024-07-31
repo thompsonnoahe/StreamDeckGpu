@@ -1,0 +1,27 @@
+{
+  "name" : "com-nthompson-gpu",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "1dc5ee30eb1032221d29f281f4a94b73f06b4284",
+  "dependencies" : [ {
+    "name" : "egl-registry",
+    "version>=" : "2024-01-25"
+  }, {
+    "name" : "glfw3",
+    "version>=" : "3.4"
+  }, {
+    "name" : "opengl-registry",
+    "version>=" : "2024-02-10#1"
+  }, {
+    "name" : "opengl",
+    "version>=" : "2022-12-04#3"
+  }, {
+    "name" : "vcpkg-cmake-config",
+    "version>=" : "2024-05-23"
+  }, {
+    "name" : "vcpkg-cmake",
+    "version>=" : "2024-04-23"
+  }, {
+    "name" : "glew",
+    "version>=" : "2.2.0#3"
+  } ]
+}

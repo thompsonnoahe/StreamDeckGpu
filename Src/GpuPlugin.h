@@ -15,7 +15,6 @@
 #include <GL/gl.h>
 #include <algorithm>
 #include <functional>
-
 #include "Windows/Nvidia/NvidiaGpuUsage.h"
 #include "Windows/Amd/AmdGpuUsage.h"
 
