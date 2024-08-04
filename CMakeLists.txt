@@ -6,9 +6,6 @@ project(com.nthompson.gpu VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 20)
 
 find_package(CUDAToolkit)
-find_package(GLEW CONFIG REQUIRED)
-find_package(glfw3 CONFIG REQUIRED)
-find_package(OpenGL)
 
 include("Src/ThirdParty/StreamDeckSDK.cmake")
 
@@ -31,7 +28,6 @@ target_include_directories(gpu PUBLIC Src/ThirdParty/Amd)
 
 add_library(adlx STATIC ${THIRD_PARTY_AMD_INCLUDE} ${THIRD_PARTY_AMD_SRC} ${THIRD_PARTY_AMD_SRC_WIN})
 
-target_link_libraries(gpu PRIVATE StreamDeckSDK CUDA::nvml adlx OpenGL::GL glfw GLEW::GLEW)
+target_link_libraries(gpu PRIVATE StreamDeckSDK CUDA::nvml adlx d3d12.lib dxgi.lib)
 
-install(FILES Src/com.nthompson.gpu.sdPlugin/manifest.json DESTINATION Release)
-
+set_property(TARGET gpu PROPERTY LINK_FLAGS "/DELAYLOAD:nvml.dll")

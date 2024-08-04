@@ -5,6 +5,16 @@
 #include "GpuPlugin.h"
 
 namespace nthompson {
+    // Convert a wide Unicode string to an UTF8 string
+    std::string ConvToString(const std::wstring &wStr)
+    {
+        if(wStr.empty()) return {};
+        int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, &wStr[0], (int)wStr.size(), nullptr, 0, nullptr, nullptr);
+        std::string strTo(sizeNeeded, 0);
+        WideCharToMultiByte(CP_UTF8, 0, &wStr[0], (int)wStr.size(), &strTo[0], sizeNeeded, nullptr, nullptr);
+        return strTo;
+    }
+
     void Timer::Start(int32_t interval, const std::function<void()>& func) {
         if (running_) return;
         running_ = true;
@@ -25,40 +35,47 @@ namespace nthompson {
     }
 
     GpuPlugin::GpuPlugin() {
-        if (!glfwInit()) {
-            ESDLog("Failed to init GLFW3");
-        }
+        IDXGIFactory* factory = nullptr;
 
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
 
-        GLFWwindow* context = glfwCreateWindow(1, 1, "", nullptr, nullptr);
-
-        glfwMakeContextCurrent(context);
-
-        GLenum status = glewInit();
-
-        if (status != GLEW_OK) {
-            ESDLog("Failed to init GLEW");
+        if (FAILED(result)) {
+            ESDLog("Failed to create factory object.");
+            return;
         }
 
         std::string amd = "amd", advancedMicroDevices = "advanced micro devices", nvidia = "nvidia";
-        std::string gpuVendor = reinterpret_cast<const char* const>(glGetString(GL_VENDOR));
 
-        // Transform to lowercase
-        std::transform(gpuVendor.begin(), gpuVendor.end(), gpuVendor.begin(), [](unsigned char c) {
-            return std::tolower(c);
-        });
+        UINT index = 0;
+        IDXGIAdapter* adapter = nullptr;
 
-        if (gpuVendor.find(amd) != std::string::npos || gpuVendor.find(advancedMicroDevices) != std::string::npos) {
-            usage_ = std::make_unique<AmdGpuUsage>();
+        nlohmann::json payload;
+
+        while (factory->EnumAdapters(index, &adapter) != DXGI_ERROR_NOT_FOUND) {
+            DXGI_ADAPTER_DESC desc;
+            adapter->GetDesc(&desc);
+            std::wstring wDescription = desc.Description;
+
+            std::string description = ConvToString(wDescription);
+
+            std::transform(description.begin(), description.end(), description.begin(),
+                           [](char c) { return std::tolower(c); });
+
+            if (description.find(nvidia) != std::string::npos) {
+                usage_ = std::make_unique<NvidiaGpuUsage>();
+                break;
+            }
+            else if (description.find(amd) != std::string::npos || description.find(advancedMicroDevices) != std::string::npos) {
+                usage_ = std::make_unique<AmdGpuUsage>();
+                break;
+            } else {
+                ESDLog("Found unsupported display adapter");
+                usage_ = nullptr;
+            }
+
+            ++index;
         }
-        else if (gpuVendor.find(nvidia) != std::string::npos) {
-            usage_ = std::make_unique<NvidiaGpuUsage>();
-        }
-        else {
-            ESDLog("Unsupported GPU.");
-            return;
-        }
+
 
         timer_ = std::make_unique<Timer>();
 
@@ -71,10 +88,19 @@ namespace nthompson {
     void GpuPlugin::Update() {
         if (mConnectionManager == nullptr) return;
         std::scoped_lock<std::mutex> lock(mutex_);
-        uint32_t utilization = usage_->GetGpuUsage();
-        for (const std::string& context : contexts_) {
-            mConnectionManager->SetTitle(std::to_string(utilization) + "%", context, kESDSDKTarget_HardwareAndSoftware);
+
+        if (usage_ == nullptr) {
+            SetActionText("?");
+            return;
         }
+
+        uint32_t utilization = usage_->GetGpuUsage();
+
+        std::stringstream stream;
+        stream << std::to_string(utilization) << "%";
+
+        SetActionText(stream.str());
+
     }
 
     GpuPlugin::~GpuPlugin() {
@@ -91,6 +117,12 @@ namespace nthompson {
                                            const nlohmann::json &inPayload, const std::string &inDeviceID) {
         std::scoped_lock<std::mutex> lock(mutex_);
         contexts_.erase(inContext);
+    }
+
+    void GpuPlugin::SetActionText(std::string text) {
+        for (const std::string& context : contexts_) {
+            mConnectionManager->SetTitle(text, context, kESDSDKTarget_HardwareAndSoftware);
+        }
     }
 
 }

@@ -1,20 +1,20 @@
 {
   "Actions": [
     {
-      "Icon": "icon", 
+      "Icon": "icon",
       "Name": "GPU",
       "States": [
         {
           "Image": "defaultImage",
-          "TitleAlignment": "middle", 
+          "TitleAlignment": "middle",
           "FontSize": "12"
         }
-      ], 
+      ],
       "SupportedInMultiActions": false,
       "Tooltip": "This action displays the GPU usage",
       "UUID": "com.nthompson.gpu.gpu"
     }
-  ], 
+  ],
   "SDKVersion": 2,
   "Author": "Noah Thompson",
   "CodePathWin": "gpu.exe",
@@ -23,16 +23,16 @@
   "Description": "Displays the current GPU usage.",
   "Name": "GPU",
   "Icon": "pluginIcon",
-  "Version": "1.1.0",
+  "Version": "1.1.1",
   "URL": "https://github.com/thompsonnoahe/StreamDeckGpu",
   "OS": [
     {
-        "Platform": "windows", 
-        "MinimumVersion" : "10"
+      "Platform": "windows",
+      "MinimumVersion" : "10"
     }
   ],
-  "Software": 
-    {
-        "MinimumVersion" : "4.1"
-    }
+  "Software":
+  {
+    "MinimumVersion" : "4.1"
+  }
 }

@@ -10,9 +10,7 @@
 #include <thread>
 #include <mutex>
 #include <set>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <GL/gl.h>
+#include <dxgi.h>
 #include <algorithm>
 #include <functional>
 #include "Windows/Nvidia/NvidiaGpuUsage.h"
@@ -37,6 +35,8 @@ namespace nthompson {
 
         void Update();
 
+        void SetActionText(std::string text);
+
         void WillAppearForAction(const std::string& inAction,
                                  const std::string& inContext,
                                  const nlohmann::json& inPayload,
@@ -48,7 +48,7 @@ namespace nthompson {
                 const nlohmann::json& inPayload,
                 const std::string& inDeviceID) override;
     private:
-        std::unique_ptr<IGpuUsage> usage_;
+        std::unique_ptr<IGpuUsage> usage_ = nullptr;
         std::unique_ptr<Timer> timer_;
         std::mutex mutex_;
         std::set<std::string> contexts_;

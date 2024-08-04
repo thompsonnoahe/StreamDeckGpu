@@ -1,7 +1,7 @@
 ![GPU Utilization Icon](Src/com.nthompson.gpu.sdPlugin/defaultImage.png)
 
 
-# Stream Deck GPU Utilization Plugin 📈 
+# Stream Deck GPU Utilization Plugin 📈
 
 A plugin for monitoring the utilization of your GPU on the Elgato Stream Deck. Windows only.
 
@@ -40,3 +40,5 @@ And presto! You should be good to go.
 
 
 ![GPU Utilization Icon](Src/com.nthompson.gpu.sdPlugin/previews/Preview2.png)
+
+<a href="https://buymeacoffee.com/thompsonnoahe" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
