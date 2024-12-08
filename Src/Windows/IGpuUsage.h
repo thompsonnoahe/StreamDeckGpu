@@ -13,5 +13,6 @@ namespace nthompson {
             IGpuUsage() = default;
             virtual ~IGpuUsage() = default;
             virtual uint32_t GetGpuUsage() = 0;
+            virtual void LaunchAssociatedApp() = 0;
     };
 }

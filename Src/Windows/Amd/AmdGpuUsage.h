@@ -13,10 +13,12 @@ namespace nthompson {
 
     class AmdGpuUsage : public IGpuUsage {
         public:
-            AmdGpuUsage(int32_t index = 0);
+            explicit AmdGpuUsage(int32_t index = 0);
             ~AmdGpuUsage() override;
             uint32_t GetGpuUsage() override;
-        private:
+            void LaunchAssociatedApp() override;
+
+    private:
             static inline ADLXHelper helper_;
             adlx::IADLXGPUPtr gpu_;
             adlx::IADLXPerformanceMonitoringServicesPtr perfMonitoringServices_;

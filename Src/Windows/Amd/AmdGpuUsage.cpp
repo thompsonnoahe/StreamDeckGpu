@@ -67,5 +67,32 @@ namespace nthompson {
         helper_.Terminate();
     }
 
+    void AmdGpuUsage::LaunchAssociatedApp() {
+        STARTUPINFO startupInfo;
+        PROCESS_INFORMATION processInformation;
+
+        ZeroMemory(&startupInfo, sizeof(startupInfo));
+        startupInfo.cb = sizeof(startupInfo);
+        ZeroMemory(&processInformation, sizeof(processInformation));
+
+        LPCTSTR path = R"(C:\Program Files\AMD\CNext\CNext\RadeonSoftware.exe)";
+
+        CreateProcess(
+                path,
+                nullptr,
+                nullptr,
+                nullptr,
+                FALSE,
+                0,
+                nullptr,
+                nullptr,
+                &startupInfo,
+                &processInformation
+        );
+
+        CloseHandle(processInformation.hProcess);
+        CloseHandle(processInformation.hThread);
+    }
+
 }
 

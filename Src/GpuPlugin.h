@@ -53,6 +53,12 @@ namespace nthompson {
                           const std::string &inContext,
                           const nlohmann::json &inPayload,
                           const std::string &inDeviceID) override;
+
+        void KeyDownForAction(
+                const std::string& inAction,
+                const std::string& inContext,
+                const nlohmann::json& inPayload,
+                const std::string& inDeviceID) override;
     private:
         void FindAvailableGpus();
         std::vector<Gpu> gpus_;

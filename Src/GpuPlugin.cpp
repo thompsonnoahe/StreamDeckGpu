@@ -158,4 +158,11 @@ namespace nthompson {
         }
         selectedGpu_ = gpu.index;
     }
+
+    void GpuPlugin::KeyDownForAction(const std::string &inAction, const std::string &inContext,
+                                     const nlohmann::json &inPayload, const std::string &inDeviceID) {
+        if (!usage_) return;
+
+        usage_->LaunchAssociatedApp();
+    }
 }

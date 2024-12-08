@@ -40,5 +40,32 @@ namespace nthompson {
         nvmlShutdown();
     }
 
+    void NvidiaGpuUsage::LaunchAssociatedApp() {
+        STARTUPINFO startupInfo;
+        PROCESS_INFORMATION processInformation;
+
+        ZeroMemory(&startupInfo, sizeof(startupInfo));
+        startupInfo.cb = sizeof(startupInfo);
+        ZeroMemory(&processInformation, sizeof(processInformation));
+
+        LPCTSTR path = R"(C:\Program Files\NVIDIA Corporation\NVIDIA app\CEF\NVIDIA app.exe)";
+
+        CreateProcess(
+            path,
+            nullptr,
+            nullptr,
+            nullptr,
+            FALSE,
+            0,
+            nullptr,
+            nullptr,
+            &startupInfo,
+            &processInformation
+        );
+
+        CloseHandle(processInformation.hProcess);
+        CloseHandle(processInformation.hThread);
+    }
+
 
 } // nthompson

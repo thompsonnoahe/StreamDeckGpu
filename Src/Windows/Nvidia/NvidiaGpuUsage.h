@@ -5,6 +5,7 @@
 #pragma once
 
 #include <nvml.h>
+#include <windows.h>
 #include <cstdint>
 #include "StreamDeckSDK/ESDLogger.h"
 #include "../IGpuUsage.h"
@@ -16,7 +17,9 @@ namespace nthompson {
             explicit NvidiaGpuUsage(int32_t index = 0);
             ~NvidiaGpuUsage() override;
             uint32_t GetGpuUsage() override;
-        private:
+            void LaunchAssociatedApp() override;
+
+    private:
             nvmlDevice_t device_;
             nvmlUtilization_t utilization_;
     };
