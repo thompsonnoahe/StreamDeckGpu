@@ -5,7 +5,7 @@
 #include "AmdGpuUsage.h"
 
 namespace nthompson {
-    AmdGpuUsage::AmdGpuUsage() {
+    AmdGpuUsage::AmdGpuUsage(int32_t index) {
         ADLX_RESULT result = helper_.Initialize();
         if (!ADLX_SUCCEEDED(result)) {
             ESDLog("Failed to initialize ADLX");
@@ -28,7 +28,7 @@ namespace nthompson {
             return;
         }
 
-        result = gpus->At(gpus->Begin(), &gpu_);
+        result = gpus->At(index, &gpu_);
 
         if (!ADLX_SUCCEEDED(result)) {
             ESDLog("Failed to get GPU");

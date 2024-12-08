@@ -15,12 +15,13 @@
 #include <functional>
 #include "Windows/Nvidia/NvidiaGpuUsage.h"
 #include "Windows/Amd/AmdGpuUsage.h"
+#include "GpuAbstraction.h"
 
 namespace nthompson {
 
     class Timer {
     public:
-        void Start(int32_t interval, const std::function<void()>& func);
+        void Start(const int32_t& interval, const std::function<void()>& func);
         void Stop();
     private:
         std::thread thread_;
@@ -35,7 +36,7 @@ namespace nthompson {
 
         void Update();
 
-        void SetActionText(std::string text);
+        void SetActionText(const std::string& text);
 
         void WillAppearForAction(const std::string& inAction,
                                  const std::string& inContext,
@@ -47,11 +48,20 @@ namespace nthompson {
                 const std::string& inContext,
                 const nlohmann::json& inPayload,
                 const std::string& inDeviceID) override;
+
+        void SendToPlugin(const std::string &inAction,
+                          const std::string &inContext,
+                          const nlohmann::json &inPayload,
+                          const std::string &inDeviceID) override;
     private:
+        void FindAvailableGpus();
+        std::vector<Gpu> gpus_;
         std::unique_ptr<IGpuUsage> usage_ = nullptr;
         std::unique_ptr<Timer> timer_;
         std::mutex mutex_;
         std::set<std::string> contexts_;
+        int32_t selectedGpu_{0};
+        void HandleSelectedGpu(const Gpu &gpu);
     };
 
 } // nthompson

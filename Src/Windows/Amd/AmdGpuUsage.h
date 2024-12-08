@@ -13,7 +13,7 @@ namespace nthompson {
 
     class AmdGpuUsage : public IGpuUsage {
         public:
-            AmdGpuUsage();
+            AmdGpuUsage(int32_t index = 0);
             ~AmdGpuUsage() override;
             uint32_t GetGpuUsage() override;
         private:

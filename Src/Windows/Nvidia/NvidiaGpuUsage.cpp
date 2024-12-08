@@ -7,7 +7,7 @@
 
 
 namespace nthompson {
-    NvidiaGpuUsage::NvidiaGpuUsage() {
+    NvidiaGpuUsage::NvidiaGpuUsage(int32_t index) {
         nvmlReturn_t status = nvmlInit();
 
         if (status != NVML_SUCCESS) {
@@ -17,7 +17,7 @@ namespace nthompson {
             return;
         }
 
-        if (status = nvmlDeviceGetHandleByIndex(0, &device_); status != NVML_SUCCESS) {
+        if (status = nvmlDeviceGetHandleByIndex(index, &device_); status != NVML_SUCCESS) {
             std::stringstream error_status;
             error_status << "Failed to query device. Error: " << nvmlErrorString(status);
             ESDLog(error_status.str());

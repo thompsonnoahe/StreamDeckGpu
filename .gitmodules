@@ -1,3 +1,6 @@
 [submodule "Src/ThirdParty/Amd"]
 	path = Src/ThirdParty/Amd
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/ADLX
+[submodule "Src/com.nthompson.gpu.sdPlugin/libs"]
+	path = Src/com.nthompson.gpu.sdPlugin/libs
+	url = https://github.com/elgatosf/streamdeck-javascript-sdk.git
