@@ -22,12 +22,14 @@ add_executable(gpu
         Src/Windows/Amd/AmdGpuUsage.cpp
         Src/Windows/Amd/AmdGpuUsage.h
         Src/Windows/IGpuUsage.h
+        Src/GpuAbstraction.h
 )
 
 target_include_directories(gpu PUBLIC Src/ThirdParty/Amd)
 
 add_library(adlx STATIC ${THIRD_PARTY_AMD_INCLUDE} ${THIRD_PARTY_AMD_SRC} ${THIRD_PARTY_AMD_SRC_WIN})
 
+set_property(TARGET gpu PROPERTY LINK_FLAGS "/DELAYLOAD:nvml.dll")
+
 target_link_libraries(gpu PRIVATE StreamDeckSDK CUDA::nvml adlx d3d12.lib dxgi.lib)
 
-set_property(TARGET gpu PROPERTY LINK_FLAGS "/DELAYLOAD:nvml.dll")

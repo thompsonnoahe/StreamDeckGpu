@@ -13,7 +13,7 @@ namespace nthompson {
 
     class NvidiaGpuUsage : public IGpuUsage {
         public:
-            NvidiaGpuUsage();
+            explicit NvidiaGpuUsage(int32_t index = 0);
             ~NvidiaGpuUsage() override;
             uint32_t GetGpuUsage() override;
         private:
