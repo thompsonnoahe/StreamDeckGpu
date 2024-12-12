@@ -32,4 +32,3 @@ add_library(adlx STATIC ${THIRD_PARTY_AMD_INCLUDE} ${THIRD_PARTY_AMD_SRC} ${THIR
 set_property(TARGET gpu PROPERTY LINK_FLAGS "/DELAYLOAD:nvml.dll")
 
 target_link_libraries(gpu PRIVATE StreamDeckSDK CUDA::nvml adlx d3d12.lib dxgi.lib)
-

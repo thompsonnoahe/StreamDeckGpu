@@ -61,7 +61,7 @@ namespace nthompson {
                 const std::string& inDeviceID) override;
     private:
         void FindAvailableGpus();
-        std::vector<Gpu> gpus_;
+        std::map<uint32_t, Gpu> gpus_;
         std::unique_ptr<IGpuUsage> usage_ = nullptr;
         std::unique_ptr<Timer> timer_;
         std::mutex mutex_;

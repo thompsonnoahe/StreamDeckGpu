@@ -95,8 +95,6 @@ namespace nthompson {
         UINT index = 0;
         IDXGIAdapter* adapter = nullptr;
 
-        nlohmann::json payload;
-
         while (factory->EnumAdapters(index, &adapter) != DXGI_ERROR_NOT_FOUND) {
             DXGI_ADAPTER_DESC desc;
             adapter->GetDesc(&desc);
@@ -108,17 +106,24 @@ namespace nthompson {
             std::transform(description.begin(), description.end(), description.begin(),
                            [](char c) { return std::tolower(c); });
 
+            std::pair<UINT, Gpu> item;
+
+            item.first = desc.DeviceId;
+
             if (description.find(nvidia) != std::string::npos) {
-                gpus_.emplace_back(Gpu{GpuVendor::Nvidia, gpuName, index});
+                item.second = {GpuVendor::Nvidia, gpuName, index};
+                gpus_.insert(item);
                 std::string gpuLog = gpuName + " found";
                 ESDLog(gpuLog);
             }
             else if (description.find(amd) != std::string::npos || description.find(advancedMicroDevices) != std::string::npos) {
-                gpus_.emplace_back(Gpu{GpuVendor::Amd, gpuName, index});
+                item.second = {GpuVendor::Amd, gpuName, index};
+                gpus_.insert(item);
                 std::string gpuLog = gpuName + " found";
                 ESDLog(gpuLog);
             } else {
-                gpus_.emplace_back(Gpu{GpuVendor::Unknown, gpuName, index});
+                item.second = {GpuVendor::Unknown, gpuName, index};
+                gpus_.insert(item);
                 ESDLog("Found unsupported display adapter");
             }
 

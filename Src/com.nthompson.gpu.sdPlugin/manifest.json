@@ -2,7 +2,7 @@
   "Actions": [
     {
       "Icon": "icon",
-      "Name": "GPU",
+      "Name": "GPU Utilization",
       "States": [
         {
           "Image": "defaultImage",
@@ -22,9 +22,9 @@
   "Category": "GPU Metrics",
   "CategoryIcon": "pluginIcon",
   "Description": "Displays the current GPU usage.",
-  "Name": "GPU",
+  "Name": "GPU Utilization",
   "Icon": "pluginIcon",
-  "Version": "1.2.1",
+  "Version": "1.2.2",
   "URL": "https://github.com/thompsonnoahe/StreamDeckGpu",
   "OS": [
     {
