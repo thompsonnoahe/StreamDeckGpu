@@ -66,6 +66,11 @@ namespace nthompson {
                                         const nlohmann::json &inPayload, const std::string &inDeviceID) {
         std::scoped_lock<std::mutex> lock(mutex_);
         contexts_.insert(inContext);
+
+        if (inPayload.contains("settings")) {
+            Gpu gpu = inPayload["settings"]["gpuInfo"];
+            HandleSelectedGpu(gpu);
+        }
     }
 
     void GpuPlugin::WillDisappearForAction(const std::string &inAction, const std::string &inContext,
@@ -81,9 +86,9 @@ namespace nthompson {
     }
 
     void GpuPlugin::FindAvailableGpus() {
-        IDXGIFactory* factory = nullptr;
+        IDXGIFactory1* factory = nullptr;
 
-        HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
+        HRESULT result = CreateDXGIFactory1(__uuidof(IDXGIFactory), (void**)&factory);
 
         if (FAILED(result)) {
             ESDLog("Failed to create factory object.");
@@ -94,6 +99,8 @@ namespace nthompson {
 
         UINT index = 0;
         IDXGIAdapter* adapter = nullptr;
+
+        uint32_t nvidiaGpuCount = 0, amdGpuCount = 0, unknownCount = 0;
 
         while (factory->EnumAdapters(index, &adapter) != DXGI_ERROR_NOT_FOUND) {
             DXGI_ADAPTER_DESC desc;
@@ -111,20 +118,23 @@ namespace nthompson {
             item.first = desc.DeviceId;
 
             if (description.find(nvidia) != std::string::npos) {
-                item.second = {GpuVendor::Nvidia, gpuName, index};
+                item.second = {GpuVendor::Nvidia, gpuName, nvidiaGpuCount, item.first};
                 gpus_.insert(item);
                 std::string gpuLog = gpuName + " found";
                 ESDLog(gpuLog);
+                nvidiaGpuCount++;
             }
             else if (description.find(amd) != std::string::npos || description.find(advancedMicroDevices) != std::string::npos) {
-                item.second = {GpuVendor::Amd, gpuName, index};
+                item.second = {GpuVendor::Amd, gpuName, amdGpuCount, item.first};
                 gpus_.insert(item);
                 std::string gpuLog = gpuName + " found";
                 ESDLog(gpuLog);
+                amdGpuCount++;
             } else {
-                item.second = {GpuVendor::Unknown, gpuName, index};
+                item.second = {GpuVendor::Unknown, gpuName, unknownCount, item.first};
                 gpus_.insert(item);
                 ESDLog("Found unsupported display adapter");
+                unknownCount++;
             }
 
             ++index;
@@ -136,7 +146,6 @@ namespace nthompson {
                             const std::string &inDeviceID) {
         nlohmann::json payload;
         if (inPayload.at("propertyInspectorLoaded").get<bool>()) {
-            payload["type"] = "availableGpus";
             payload["gpus"] = gpus_;
             payload["selected"] = selectedGpu_;
             mConnectionManager->SendToPropertyInspector(inAction, inContext, payload);
@@ -146,6 +155,7 @@ namespace nthompson {
             Gpu gpu = inPayload["gpuInfo"];
             HandleSelectedGpu(gpu);
             mConnectionManager->SendToPropertyInspector(inAction, inContext, payload);
+            mConnectionManager->SetSettings(inPayload, inContext);
         }
     }
 
@@ -161,7 +171,7 @@ namespace nthompson {
                 usage_ = nullptr;
                 break;
         }
-        selectedGpu_ = gpu.index;
+        selectedGpu_ = gpu;
     }
 
     void GpuPlugin::KeyDownForAction(const std::string &inAction, const std::string &inContext,

@@ -42,11 +42,19 @@ window.connectElgatoStreamDeckSocket = (inPort, inPropertyInspectorUUID, inRegis
 
         if (!payload) return;
 
-        const gpus = payload['gpus'];
-        const selected = payload['selected'];
+        if (payload["gpus"]) {
+            const gpus = payload['gpus'];
+            const selection = payload['selected'];
 
-        for (let i = 0; i < gpus?.length; i++) {
-            select.add(new Option(gpus[i][1].name, JSON.stringify(gpus[i][1]), false, selected > 0 ? i === selected : i === 0));
+            for (let i = 0; i < gpus?.length; i++) {
+                select.add(new Option(gpus[i][1].name, JSON.stringify(gpus[i][1]), false, gpus[i][1].deviceId === selection['deviceId']));
+            }
+        }
+
+        if (payload["settings"]) {
+            const gpuInfo = payload["settings"]["gpuInfo"]
+            const options = [...select.options];
+            select.selectedIndex = options.findIndex(o => JSON.parse(o.value).deviceId === gpuInfo["deviceId"]);
         }
     })
 

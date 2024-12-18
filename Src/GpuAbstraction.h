@@ -19,8 +19,9 @@ namespace nthompson {
         GpuVendor vendor;
         std::string name;
         uint32_t index;
+        UINT deviceId;
     };
 
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Gpu, vendor, name, index);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Gpu, vendor, name, index, deviceId);
 }
 
