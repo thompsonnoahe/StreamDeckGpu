@@ -87,22 +87,29 @@ namespace nthompson {
 
     void GpuPlugin::FindAvailableGpus() {
         IDXGIFactory1* factory = nullptr;
+        winrt::com_ptr<IDXCoreAdapterFactory> coreFactory;
 
-        HRESULT result = CreateDXGIFactory1(__uuidof(IDXGIFactory), (void**)&factory);
+        HRESULT result = CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)&factory);
 
         if (FAILED(result)) {
             ESDLog("Failed to create factory object.");
             return;
         }
 
+        if (FAILED(DXCoreCreateAdapterFactory(coreFactory.put()))) {
+            ESDLog("Failed to create core factory object.");
+            return;
+        }
+
         std::string amd = "amd", advancedMicroDevices = "advanced micro devices", nvidia = "nvidia";
 
         UINT index = 0;
-        IDXGIAdapter* adapter = nullptr;
+        IDXGIAdapter1* adapter = nullptr;
+        winrt::com_ptr<IDXCoreAdapter> coreAdapter = nullptr;
 
-        uint32_t nvidiaGpuCount = 0, amdGpuCount = 0, unknownCount = 0;
+        uint32_t nvidiaGpuCount = 0, amdGpuCount = 0;
 
-        while (factory->EnumAdapters(index, &adapter) != DXGI_ERROR_NOT_FOUND) {
+        while (factory->EnumAdapters1(index, &adapter) != DXGI_ERROR_NOT_FOUND) {
             DXGI_ADAPTER_DESC desc;
             adapter->GetDesc(&desc);
             std::wstring wDescription = desc.Description;
@@ -112,6 +119,51 @@ namespace nthompson {
 
             std::transform(description.begin(), description.end(), description.begin(),
                            [](char c) { return std::tolower(c); });
+
+            if (FAILED(coreFactory->GetAdapterByLuid(desc.AdapterLuid, coreAdapter.put()))) {
+                ESDLog("Failed to get core adapter.");
+                adapter->Release();
+                ++index;
+                continue;
+            }
+
+            if (!coreAdapter->IsPropertySupported(DXCoreAdapterProperty::IsIntegrated) || !coreAdapter->IsPropertySupported(DXCoreAdapterProperty::IsHardware)) {
+                ESDLog("Adapter does not support required properties.");
+                adapter->Release();
+                ++index;
+                continue;
+            }
+
+            bool isIntegrated = false;
+            bool isHardwareAdapter;
+
+            if (FAILED(coreAdapter->GetProperty(DXCoreAdapterProperty::IsIntegrated, &isIntegrated))) {
+                ESDLog("Failed to get integrated property.");
+                adapter->Release();
+                ++index;
+                continue;
+            }
+
+            if (FAILED(coreAdapter->GetProperty(DXCoreAdapterProperty::IsHardware, &isHardwareAdapter))) {
+                ESDLog("Failed to get hardware property.");
+                adapter->Release();
+                ++index;
+                continue;
+            }
+
+            if (!isHardwareAdapter) {
+                ESDLog("Adapter is not a hardware adapter.");
+                adapter->Release();
+                ++index;
+                continue;
+            }
+
+            if (isIntegrated) {
+                ESDLog("Adapter is iGPU.");
+                adapter->Release();
+                ++index;
+                continue;
+            }
 
             std::pair<UINT, Gpu> item;
 
@@ -131,14 +183,14 @@ namespace nthompson {
                 ESDLog(gpuLog);
                 amdGpuCount++;
             } else {
-                item.second = {GpuVendor::Unknown, gpuName, unknownCount, item.first};
-                gpus_.insert(item);
                 ESDLog("Found unsupported display adapter");
-                unknownCount++;
             }
 
             ++index;
+
+            adapter->Release();
         }
+        factory->Release();
     }
 
     void

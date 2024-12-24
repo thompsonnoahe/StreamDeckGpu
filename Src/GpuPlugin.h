@@ -11,7 +11,10 @@
 #include <mutex>
 #include <set>
 #include <dxgi.h>
+#include <dxcore.h>
+#include <dxcore_interface.h>
 #include <algorithm>
+#include <winrt/base.h>
 #include <functional>
 #include "Windows/Nvidia/NvidiaGpuUsage.h"
 #include "Windows/Amd/AmdGpuUsage.h"
