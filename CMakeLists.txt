@@ -13,10 +13,10 @@ add_definitions(-DNAPI_VERSION=7)
 include_directories(${CMAKE_JS_INC})
 
 set(SOURCE_FILES src/cpp/GpuAddon.cpp
-  src/cpp/windows/amd/AmdGpuUsage.cpp
-  src/cpp/windows/nvidia/NvidiaGpuUsage.cpp
-  src/cpp/windows/IGpuUsage.hpp
-  src/cpp/GpuAbstraction.hpp)
+  src/cpp/windows/amd/AmdGpuMetrics.cpp
+  src/cpp/windows/nvidia/NvidiaGpuMetrics.cpp
+  src/cpp/windows/Interfaces.hpp
+  src/cpp/GpuAbstraction.cpp)
 
 set(THIRD_PARTY_AMD_INCLUDE src/cpp/third-party/amd/SDK/ADLXHelper/Windows/Cpp/ADLXHelper.h)
 set(THIRD_PARTY_AMD_SRC src/cpp/third-party/amd/SDK/ADLXHelper/Windows/Cpp/ADLXHelper.cpp)

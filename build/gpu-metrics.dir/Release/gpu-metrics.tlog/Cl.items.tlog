@@ -1,0 +1,5 @@
+C:\FleetProjects\gpu-metrics\src\cpp\GpuAddon.cpp;C:\FleetProjects\gpu-metrics\build\gpu-metrics.dir\Release\GpuAddon.obj
+C:\FleetProjects\gpu-metrics\src\cpp\windows\amd\AmdGpuMetrics.cpp;C:\FleetProjects\gpu-metrics\build\gpu-metrics.dir\Release\AmdGpuMetrics.obj
+C:\FleetProjects\gpu-metrics\src\cpp\windows\nvidia\NvidiaGpuMetrics.cpp;C:\FleetProjects\gpu-metrics\build\gpu-metrics.dir\Release\NvidiaGpuMetrics.obj
+C:\FleetProjects\gpu-metrics\src\cpp\GpuAbstraction.cpp;C:\FleetProjects\gpu-metrics\build\gpu-metrics.dir\Release\GpuAbstraction.obj
+C:\FleetProjects\gpu-metrics\node_modules\cmake-js\lib\cpp\win_delay_load_hook.cc;C:\FleetProjects\gpu-metrics\build\gpu-metrics.dir\Release\win_delay_load_hook.obj

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <title>GPU Metrics</title>
+    <meta charset="utf-8" />
+    <script src="https://sdpi-components.dev/releases/v3/sdpi-components.js"></script>
+</head>
+
+<body>
+    <!--
+        Learn more about property inspector components at https://sdpi-components.dev/docs/components
+    -->
+    <sdpi-item label="Device">
+        <sdpi-select id="devices" label="Devices" placeholder="Select a device" setting="gpuId">
+        </sdpi-select>
+    </sdpi-item>
+
+    <script>
+        const { streamDeckClient } = SDPIComponents;
+
+        streamDeckClient.sendToPropertyInspector.subscribe((e) => {
+            const devices = document.getElementById('devices');
+
+            if (e.payload.length == 0) {
+                const option = document.createElement('option');
+                option.value = undefined;
+                option.text = 'No GPUs found';
+                devices.appendChild(option);
+            }
+
+            for (const device of e.payload) {
+                const option = document.createElement('option');
+                option.value = device.value;
+                option.text = device.title;
+                devices.appendChild(option);
+            }
+        });
+    </script>
+</body>
+
+</html>

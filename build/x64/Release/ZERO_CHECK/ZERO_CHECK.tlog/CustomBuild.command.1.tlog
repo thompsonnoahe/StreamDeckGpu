@@ -1,0 +1,10 @@
+^C:\FLEETPROJECTS\GPU-METRICS\BUILD\CMAKEFILES\439CB2EB72989C54614B5856DD72E6C2\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/FleetProjects/gpu-metrics -BC:/FleetProjects/gpu-metrics/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/FleetProjects/gpu-metrics/build/gpu-metrics.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
