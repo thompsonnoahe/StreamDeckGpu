@@ -1,6 +1,6 @@
 {
   "Name": "GPU Metrics",
-  "Version": "0.1.0.0",
+  "Version": "1.0.0.0",
   "Author": "Noah Thompson",
   "Actions": [
     {
@@ -14,7 +14,7 @@
         {
           "Image": "imgs/plugin/icon",
           "TitleAlignment": "middle",
-          "FontSize": 14
+          "FontSize": 12
         }
       ]
     },
@@ -53,7 +53,7 @@
   "CategoryIcon": "imgs/plugin/category-icon",
   "CodePath": "bin/plugin.js",
   "Description": "Displays information about your GPU.",
-  "Icon": "imgs/plugin/marketplace",
+  "Icon": "imgs/plugin/icon",
   "SDKVersion": 2,
   "Software": {
     "MinimumVersion": "6.4"
