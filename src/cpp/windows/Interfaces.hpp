@@ -23,7 +23,9 @@ class IGpuMemoryUsage {
     public:
         IGpuMemoryUsage() = default;
         virtual ~IGpuMemoryUsage() = default;
+        // Gets the total amount of VRAM on the device
         virtual uint64_t GetTotalMemory() = 0;
+        // Gets the GPU memory usage metric
         virtual uint64_t GetUsedMemory() = 0;
 };
 
