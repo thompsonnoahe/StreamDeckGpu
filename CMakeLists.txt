@@ -11,6 +11,8 @@ find_package(CUDAToolkit)
 add_definitions(-DNAPI_VERSION=7)
 
 include_directories(${CMAKE_JS_INC})
+include_directories(node_modules/node-api-headers/include/)
+include_directories(node_modules/node-addon-api/)
 
 set(SOURCE_FILES src/cpp/GpuAddon.cpp
   src/cpp/windows/amd/AmdGpuMetrics.cpp
