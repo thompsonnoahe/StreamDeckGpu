@@ -15,6 +15,7 @@ class AmdGpuMetrics : public IGpuMetrics {
         uint32_t GetGpuTemperature() override;
         uint64_t GetUsedMemory() override;
         uint64_t GetTotalMemory() override;
+        uint32_t GetGpuPowerUsage() override;
         // Launches AMD's Adrenalin software
         void LaunchAssociatedApp() override;
         // Helper function to get all AMD devices

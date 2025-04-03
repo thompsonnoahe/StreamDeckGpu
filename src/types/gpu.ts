@@ -8,6 +8,7 @@ type Gpu = {
   temperature: number;
   memory: number;
   usedMemory: number;
+  power: number;
   launchAssociatedApp: () => void;
 };
 

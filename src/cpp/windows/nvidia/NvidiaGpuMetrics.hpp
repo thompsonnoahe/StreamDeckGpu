@@ -15,6 +15,7 @@ class NvidiaGpuMetrics : public IGpuMetrics {
         uint32_t GetGpuTemperature() override;
         uint64_t GetUsedMemory() override;
         uint64_t GetTotalMemory() override;
+        uint32_t GetGpuPowerUsage() override;
         // Helper function to get all NVIDIA devices
         static std::vector<struct Gpu> GetGpus();
         // Launches the NVIDIA app

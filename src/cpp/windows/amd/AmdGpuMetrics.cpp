@@ -92,7 +92,7 @@ uint32_t AmdGpuMetrics::GetGpuUsage() {
 
 uint32_t AmdGpuMetrics::GetGpuTemperature()
 {
-   std::stringstream errorStatus;
+    std::stringstream errorStatus;
     if (!initialized_) {
         errorStatus << "Not initialized";
         return 0;
@@ -180,7 +180,7 @@ uint64_t AmdGpuMetrics::GetUsedMemory()
     result = gpuMetricsSupport->IsSupportedGPUTemperature(&supported);
 
     if (!ADLX_SUCCEEDED(result) || !supported) {
-        errorStatus << "Failed to get GPU temperature support, or GPU temperature is not supported. Error: " << result;
+        errorStatus << "Failed to get GPU memory support, or GPU memory query is not supported. Error: " << result;
         return 0;
     }
 
@@ -188,7 +188,7 @@ uint64_t AmdGpuMetrics::GetUsedMemory()
     result = gpuMetrics->GPUVRAM(&vram);
 
     if (!ADLX_SUCCEEDED(result)) {
-        errorStatus << "Failed to get GPU temperature. Error: " << result;
+        errorStatus << "Failed to get GPU memory. Error: " << result;
         return 0;
     }
 
@@ -208,6 +208,58 @@ uint64_t AmdGpuMetrics::GetTotalMemory()
     }
 
     return totalVram;
+}
+
+uint32_t AmdGpuMetrics::GetGpuPowerUsage()
+{
+     std::stringstream errorStatus;
+    if (!initialized_) {
+        errorStatus << "Not initialized";
+        return 0;
+    }
+
+    adlx::IADLXGPUMetricsSupportPtr gpuMetricsSupport;
+    ADLX_RESULT result = perfMonitoringServices_->GetSupportedGPUMetrics(gpu_, &gpuMetricsSupport);
+
+    if (!ADLX_SUCCEEDED(result)) {
+        errorStatus << "Failed to get GPU metrics support. Error: " << result;
+        return 0;
+    }
+
+    adlx::IADLXAllMetricsPtr allMetrics;
+
+    result = perfMonitoringServices_->GetCurrentAllMetrics(&allMetrics);
+
+    if (!ADLX_SUCCEEDED(result)) {
+        errorStatus << "Failed to get all metrics. Error: " << result;
+        return 0;
+    }
+
+    adlx::IADLXGPUMetricsPtr gpuMetrics;
+    result = allMetrics->GetGPUMetrics(gpu_, &gpuMetrics);
+
+    if (!ADLX_SUCCEEDED(result)) {
+        errorStatus << "Failed to get GPU metrics. Error: " << result;
+        return 0;
+    }
+
+    adlx_bool supported = false;
+    result = gpuMetricsSupport->IsSupportedGPUPower(&supported);
+
+    if (!ADLX_SUCCEEDED(result) || !supported) {
+        errorStatus << "Failed to get GPU power support, or GPU power is not supported. Error: " << result;
+        return 0;
+    }
+
+    adlx_double power = 0;
+    result = gpuMetrics->GPUPower(&power);
+
+    if (!ADLX_SUCCEEDED(result)) {
+        errorStatus << "Failed to get GPU power. Error: " << result;
+        return 0;
+    }
+
+    return static_cast<uint32_t>(std::trunc(power));
 }
 
 void AmdGpuMetrics::LaunchAssociatedApp() {

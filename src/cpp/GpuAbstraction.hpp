@@ -41,6 +41,7 @@ class GpuWrapper : public Napi::ObjectWrap<GpuWrapper> {
         Napi::Value GetGpuTemperature(const Napi::CallbackInfo &info);
         Napi::Value GetGpuMemoryUsed(const Napi::CallbackInfo &info);
         Napi::Value GetGpuMemory(const Napi::CallbackInfo &info);
+        Napi::Value GetGpuPower(const Napi::CallbackInfo &info);
         void LaunchAssociatedApp(const Napi::CallbackInfo &info);
         void Finalize(Napi::Env env) override;
     private:

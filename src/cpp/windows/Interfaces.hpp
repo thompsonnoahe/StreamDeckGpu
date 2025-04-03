@@ -29,7 +29,15 @@ class IGpuMemoryUsage {
         virtual uint64_t GetUsedMemory() = 0;
 };
 
-class IGpuMetrics : public IGpuUsage, public IGpuTemperature, public IGpuMemoryUsage {
+class IGpuPowerUsage {
+    public:
+        IGpuPowerUsage() = default;
+        virtual ~IGpuPowerUsage() = default;
+        // Gets the GPU power usage metric
+        virtual uint32_t GetGpuPowerUsage() = 0;
+};
+
+class IGpuMetrics : public IGpuUsage, public IGpuTemperature, public IGpuMemoryUsage, public IGpuPowerUsage {
     public:
         IGpuMetrics() = default;
         // Launches the associated application for driver settings

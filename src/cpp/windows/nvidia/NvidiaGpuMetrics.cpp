@@ -53,7 +53,7 @@ uint64_t NvidiaGpuMetrics::GetUsedMemory()
     if (nvmlReturn_t status = nvmlDeviceGetMemoryInfo(device_, &memory); status != NVML_SUCCESS) {
         std::stringstream error_status;
         error_status << "Failed to query memory. Error: " << nvmlErrorString(status);
-        return -1;
+        return 0;
     }
 
     return memory.used;
@@ -66,10 +66,23 @@ uint64_t NvidiaGpuMetrics::GetTotalMemory()
     if (nvmlReturn_t status = nvmlDeviceGetMemoryInfo(device_, &memory); status != NVML_SUCCESS) {
         std::stringstream error_status;
         error_status << "Failed to query memory. Error: " << nvmlErrorString(status);
-        return -1;
+        return 0;
     }
 
     return memory.total;
+}
+
+uint32_t NvidiaGpuMetrics::GetGpuPowerUsage()
+{
+    uint32_t powerUsage;
+
+    if (nvmlReturn_t status = nvmlDeviceGetPowerUsage(device_, &powerUsage); status != NVML_SUCCESS) {
+        std::stringstream errorStatus;
+        errorStatus << "Failed to query power usage. Error: " << nvmlErrorString(status);
+        return 0;
+    }
+
+    return powerUsage;
 }
 
 std::vector<Gpu> NvidiaGpuMetrics::GetGpus() {

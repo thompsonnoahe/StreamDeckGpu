@@ -60,26 +60,16 @@ export class GpuMemoryUsage extends SingletonAction<GpuMemoryUsageSettings> {
   }
 
   formatUsedMemory(gpu: Gpu) {
-    let memoryUnit: string;
     switch (gpu.vendor) {
-      case Vendor.Nvidia:
-        memoryUnit = 'bytes';
-        break;
-      case Vendor.Amd:
-        memoryUnit = 'MB';
-        break;
+      case Vendor.Amd: // AMD returns MB, convert to GB
+        return `${Math.round(gpu.usedMemory) / Math.pow(1024, 2)} / \n ${
+          Math.round(gpu.memory) / Math.pow(1024, 2)
+        } GB`;
+      case Vendor.Nvidia: // NVIDIA returns bytes, convert to GB
       default:
-        memoryUnit = 'bytes';
-    }
-
-    if (memoryUnit === 'bytes') {
-      return `${(gpu.usedMemory / Math.pow(1024, 3)).toFixed(
-        1
-      )} / \n ${Math.round(gpu.memory / Math.pow(1024, 3))} GB`;
-    } else {
-      return `${Math.trunc(gpu.usedMemory) / Math.pow(1024, 2)} / \n ${
-        Math.trunc(gpu.memory) / Math.pow(1024, 2)
-      } GB`;
+        return `${(gpu.usedMemory / Math.pow(1024, 3)).toFixed(
+          1
+        )} / \n ${Math.round(gpu.memory / Math.pow(1024, 3))} GB`;
     }
   }
 

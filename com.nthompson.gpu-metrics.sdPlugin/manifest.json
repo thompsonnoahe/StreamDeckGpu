@@ -47,6 +47,21 @@
           "FontSize": 9
         }
       ]
+    },
+    {
+      "Name": "GPU Power",
+      "UUID": "com.nthompson.gpu-metrics.power",
+      "Icon": "imgs/plugin/icon",
+      "Tooltip": "Displays the current GPU power usage.",
+      "PropertyInspectorPath": "ui/gpu-power.html",
+      "Controllers": ["Keypad"],
+      "States": [
+        {
+          "Image": "imgs/plugin/icon",
+          "TitleAlignment": "middle",
+          "FontSize": 9
+        }
+      ]
     }
   ],
   "Category": "GPU Metrics",

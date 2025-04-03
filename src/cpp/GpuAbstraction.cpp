@@ -161,6 +161,7 @@ Napi::Function GpuWrapper::GetClass(Napi::Env env)
             InstanceAccessor("memory", &GpuWrapper::GetGpuMemory, nullptr),
             InstanceAccessor("usedMemory", &GpuWrapper::GetGpuMemoryUsed, nullptr),
             InstanceAccessor("temperature", &GpuWrapper::GetGpuTemperature, nullptr),
+            InstanceAccessor("power", &GpuWrapper::GetGpuPower, nullptr),
             InstanceMethod("launchAssociatedApp", &GpuWrapper::LaunchAssociatedApp),
     });
 }
@@ -255,6 +256,20 @@ Napi::Value GpuWrapper::GetGpuMemory(const Napi::CallbackInfo &info)
     }
 
     return Napi::Number::New(info.Env(), gpu_->metrics->GetTotalMemory());
+}
+
+Napi::Value GpuWrapper::GetGpuPower(const Napi::CallbackInfo &info)
+{
+    if (gpu_ == nullptr) 
+    {
+        return Napi::Number::New(info.Env(), -1);
+    }
+    if (gpu_->metrics == nullptr)   
+    {
+        return Napi::Number::New(info.Env(), -1);
+    }
+
+    return Napi::Number::New(info.Env(), gpu_->metrics->GetGpuPowerUsage());
 }
 
 void GpuWrapper::LaunchAssociatedApp(const Napi::CallbackInfo &info)
