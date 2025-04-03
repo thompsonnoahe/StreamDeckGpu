@@ -6,4 +6,5 @@ node_modules/
 *.sdPlugin/logs
 
 .idea/
-build/
+build
+debug.log
