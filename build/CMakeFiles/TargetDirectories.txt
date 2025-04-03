@@ -1,4 +1,0 @@
-C:/FleetProjects/gpu-metrics/build/CMakeFiles/gpu-metrics.dir
-C:/FleetProjects/gpu-metrics/build/CMakeFiles/adlx.dir
-C:/FleetProjects/gpu-metrics/build/CMakeFiles/ALL_BUILD.dir
-C:/FleetProjects/gpu-metrics/build/CMakeFiles/ZERO_CHECK.dir
