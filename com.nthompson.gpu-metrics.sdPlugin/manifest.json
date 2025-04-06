@@ -1,87 +1,95 @@
 {
-  "Name": "GPU Metrics",
-  "Version": "1.0.0.0",
-  "Author": "Noah Thompson",
-  "Actions": [
-    {
-      "Name": "GPU Utilization",
-      "UUID": "com.nthompson.gpu-metrics.usage",
-      "Icon": "imgs/plugin/icon",
-      "Tooltip": "Displays the current GPU utilization.",
-      "PropertyInspectorPath": "ui/gpu-usage.html",
-      "Controllers": ["Keypad"],
-      "States": [
-        {
-          "Image": "imgs/plugin/icon",
-          "TitleAlignment": "middle",
-          "FontSize": 12
-        }
-      ]
-    },
-    {
-      "Name": "GPU Temperature",
-      "UUID": "com.nthompson.gpu-metrics.temp",
-      "Icon": "imgs/plugin/icon",
-      "Tooltip": "Displays the current GPU temperature.",
-      "PropertyInspectorPath": "ui/gpu-temp.html",
-      "Controllers": ["Keypad"],
-      "States": [
-        {
-          "Image": "imgs/plugin/icon",
-          "TitleAlignment": "middle",
-          "FontSize": 10
-        }
-      ]
-    },
-    {
-      "Name": "GPU Memory",
-      "UUID": "com.nthompson.gpu-metrics.mem",
-      "Icon": "imgs/plugin/icon",
-      "Tooltip": "Displays the current GPU memory usage.",
-      "PropertyInspectorPath": "ui/gpu-mem.html",
-      "Controllers": ["Keypad"],
-      "States": [
-        {
-          "Image": "imgs/plugin/icon",
-          "TitleAlignment": "middle",
-          "FontSize": 9
-        }
-      ]
-    },
-    {
-      "Name": "GPU Power",
-      "UUID": "com.nthompson.gpu-metrics.power",
-      "Icon": "imgs/plugin/icon",
-      "Tooltip": "Displays the current GPU power usage.",
-      "PropertyInspectorPath": "ui/gpu-power.html",
-      "Controllers": ["Keypad"],
-      "States": [
-        {
-          "Image": "imgs/plugin/icon",
-          "TitleAlignment": "middle",
-          "FontSize": 9
-        }
-      ]
-    }
-  ],
-  "Category": "GPU Metrics",
-  "CategoryIcon": "imgs/plugin/category-icon",
-  "CodePath": "bin/plugin.js",
-  "Description": "Displays information about your GPU.",
-  "Icon": "imgs/plugin/icon",
-  "SDKVersion": 2,
-  "Software": {
-    "MinimumVersion": "6.4"
-  },
-  "OS": [
-    {
-      "Platform": "windows",
-      "MinimumVersion": "10"
-    }
-  ],
-  "Nodejs": {
-    "Version": "20",
-    "Debug": "enabled"
-  },
-  "UUID": "com.nthompson.gpu-metrics"
+	"Name": "GPU Metrics",
+	"Version": "1.0.0.0",
+	"Author": "Noah Thompson",
+	"Actions": [
+		{
+			"Name": "GPU Utilization",
+			"UUID": "com.nthompson.gpu-metrics.usage",
+			"Icon": "imgs/plugin/icon",
+			"Tooltip": "Displays the current GPU utilization.",
+			"PropertyInspectorPath": "ui/gpu-usage.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/plugin/icon",
+					"TitleAlignment": "middle",
+					"FontSize": 12
+				}
+			]
+		},
+		{
+			"Name": "GPU Temperature",
+			"UUID": "com.nthompson.gpu-metrics.temp",
+			"Icon": "imgs/plugin/icon",
+			"Tooltip": "Displays the current GPU temperature.",
+			"PropertyInspectorPath": "ui/gpu-temp.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/plugin/icon",
+					"TitleAlignment": "middle",
+					"FontSize": 10
+				}
+			]
+		},
+		{
+			"Name": "GPU Memory",
+			"UUID": "com.nthompson.gpu-metrics.mem",
+			"Icon": "imgs/plugin/icon",
+			"Tooltip": "Displays the current GPU memory usage.",
+			"PropertyInspectorPath": "ui/gpu-mem.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/plugin/icon",
+					"TitleAlignment": "middle",
+					"FontSize": 9
+				}
+			]
+		},
+		{
+			"Name": "GPU Power",
+			"UUID": "com.nthompson.gpu-metrics.power",
+			"Icon": "imgs/plugin/icon",
+			"Tooltip": "Displays the current GPU power usage.",
+			"PropertyInspectorPath": "ui/gpu-power.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/plugin/icon",
+					"TitleAlignment": "middle",
+					"FontSize": 9
+				}
+			]
+		}
+	],
+	"Category": "GPU Metrics",
+	"CategoryIcon": "imgs/plugin/category-icon",
+	"CodePath": "bin/plugin.js",
+	"Description": "Displays information about your GPU.",
+	"Icon": "imgs/plugin/icon",
+	"SDKVersion": 2,
+	"Software": {
+		"MinimumVersion": "6.4"
+	},
+	"OS": [
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	],
+	"Nodejs": {
+		"Version": "20",
+		"Debug": "enabled"
+	},
+	"UUID": "com.nthompson.gpu-metrics"
 }
