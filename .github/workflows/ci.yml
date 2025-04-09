@@ -20,6 +20,13 @@ jobs:
         node-version: [18.x, 20.x, 22.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
+    - uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        build-mode: manual
+    - uses: github/codeql-action/analyze@v3
+      with:
+          category: "/language:${{ matrix.language }}"
     - uses: actions/checkout@v4
       with:
         submodules: recursive
