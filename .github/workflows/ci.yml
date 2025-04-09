@@ -18,7 +18,11 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        include:
+        - language: c-cpp
+          build-mode: manual
+        - language: typescript
+          build-mode: none
     steps:
     - uses: github/codeql-action/init@v3
       with:
