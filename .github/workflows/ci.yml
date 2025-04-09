@@ -24,7 +24,6 @@ jobs:
       id: cuda-toolkit
       with:
         cuda: '12.4.1'
-    - uses: threeal/cmake-action@v2.1.0
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
