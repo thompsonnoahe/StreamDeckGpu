@@ -1,6 +1,8 @@
 ![Gpu Banner](com.nthompson.gpu-metrics.sdPlugin/imgs/plugin/GPU%20Metrics%20Banner.png)
 
 [![CI](https://github.com/thompsonnoahe/StreamDeckGpu/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/thompsonnoahe/StreamDeckGpu/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/thompsonnoahe/StreamDeckGpu/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/thompsonnoahe/StreamDeckGpu/actions/workflows/github-code-scanning/codeql)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # Stream Deck GPU Metrics 📊
 
