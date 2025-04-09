@@ -1,5 +1,7 @@
 ![Gpu Banner](com.nthompson.gpu-metrics.sdPlugin/imgs/plugin/GPU%20Metrics%20Banner.png)
 
+[![CI](https://github.com/thompsonnoahe/StreamDeckGpu/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/thompsonnoahe/StreamDeckGpu/actions/workflows/ci.yml)
+
 # Stream Deck GPU Metrics 📊
 
 A plugin for monitoring metrics of your GPU on the Elgato Stream Deck. Windows only.
