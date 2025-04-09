@@ -21,7 +21,7 @@ jobs:
         include:
         - language: c-cpp
           build-mode: manual
-        - language: typescript
+        - language: javascript-typescript
           build-mode: none
     steps:
     - uses: github/codeql-action/init@v3
