@@ -5,3 +5,5 @@
 [2025-02-05/ 18:36:52.981:WARNING:browser_app_win.cc(521)] Unable to read protocol whitelist from registry, status 2
 [2025-02-05/ 20:22:52.344:WARNING:browser_app_win.cc(521)] Unable to read protocol whitelist from registry, status 2
 [2025-02-06/ 21:37:44.243:WARNING:browser_app_win.cc(521)] Unable to read protocol whitelist from registry, status 2
+[2025-04-07/ 20:26:17.473:INFO:browser_app_win.cc(301)] filePath to delete: NVIDIA App\UpdateFramework\status\nvapp\nvAppUpdate.json
+[2025-04-07/ 20:26:17.475:WARNING:browser_app_win.cc(527)] Unable to read protocol whitelist from registry, status 2

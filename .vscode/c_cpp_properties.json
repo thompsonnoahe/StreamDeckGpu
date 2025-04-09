@@ -4,7 +4,8 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.6/**"
+                "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.6/**",
+                "${workspaceFolder}/node_modules/node-addon-api"
             ],
             "defines": [
                 "_DEBUG",

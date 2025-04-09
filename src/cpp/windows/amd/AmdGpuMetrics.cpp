@@ -1,22 +1,30 @@
 #include "AmdGpuMetrics.hpp"
 
-AmdGpuMetrics::AmdGpuMetrics(int32_t index) {
+AmdGpuMetrics::AmdGpuMetrics(int32_t index)
+{
     std::stringstream errorStatus;
     // Check so we don't have to reinitialize ADLX
-    if (!initialized_) {
+    if (!initialized_)
+    {
         // Use the provided global to prevent the library from terminating
         ADLX_RESULT result = g_ADLX.Initialize();
-        if (!ADLX_SUCCEEDED(result)) {
+        if (!ADLX_SUCCEEDED(result))
+        {
             errorStatus << "Failed to initialize ADLX. Error: " << result;
+            SD_LOG(LogLevel::Error, errorStatus.str());
             initialized_ = false;
             return;
         }
         initialized_ = true;
+
+        SD_LOG(LogLevel::Info, "ADLX initialized successfully.");
     }
 
     ADLX_RESULT result = g_ADLX.GetSystemServices()->GetPerformanceMonitoringServices(&perfMonitoringServices_);
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get performance monitoring services. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         initialized_ = false;
         return;
     }
@@ -24,32 +32,41 @@ AmdGpuMetrics::AmdGpuMetrics(int32_t index) {
     adlx::IADLXGPUListPtr gpus;
     result = g_ADLX.GetSystemServices()->GetGPUs(&gpus);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get GPUs. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         initialized_ = false;
         return;
     }
 
     result = gpus->At(index, &gpu_);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get GPU. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         initialized_ = false;
     }
 }
 
-uint32_t AmdGpuMetrics::GetGpuUsage() {
+uint32_t AmdGpuMetrics::GetGpuUsage()
+{
     std::stringstream errorStatus;
-    if (!initialized_) {
+    if (!initialized_)
+    {
         errorStatus << "Not initialized";
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
     adlx::IADLXGPUMetricsSupportPtr gpuMetricsSupport;
     ADLX_RESULT result = perfMonitoringServices_->GetSupportedGPUMetrics(gpu_, &gpuMetricsSupport);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get GPU metrics support. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
@@ -57,33 +74,40 @@ uint32_t AmdGpuMetrics::GetGpuUsage() {
 
     result = perfMonitoringServices_->GetCurrentAllMetrics(&allMetrics);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get all metrics. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
-
 
     adlx::IADLXGPUMetricsPtr gpuMetrics;
     result = allMetrics->GetGPUMetrics(gpu_, &gpuMetrics);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get GPU metrics. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
     adlx_bool supported = false;
     result = gpuMetricsSupport->IsSupportedGPUUsage(&supported);
 
-    if (!ADLX_SUCCEEDED(result) || !supported) {
+    if (!ADLX_SUCCEEDED(result) || !supported)
+    {
         errorStatus << "Failed to get GPU usage support, or GPU usage is not supported. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
     adlx_double usage = 0;
     result = gpuMetrics->GPUUsage(&usage);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get GPU usage. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
@@ -93,16 +117,20 @@ uint32_t AmdGpuMetrics::GetGpuUsage() {
 uint32_t AmdGpuMetrics::GetGpuTemperature()
 {
     std::stringstream errorStatus;
-    if (!initialized_) {
+    if (!initialized_)
+    {
         errorStatus << "Not initialized";
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
     adlx::IADLXGPUMetricsSupportPtr gpuMetricsSupport;
     ADLX_RESULT result = perfMonitoringServices_->GetSupportedGPUMetrics(gpu_, &gpuMetricsSupport);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get GPU metrics support. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
@@ -110,33 +138,40 @@ uint32_t AmdGpuMetrics::GetGpuTemperature()
 
     result = perfMonitoringServices_->GetCurrentAllMetrics(&allMetrics);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get all metrics. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
-
 
     adlx::IADLXGPUMetricsPtr gpuMetrics;
     result = allMetrics->GetGPUMetrics(gpu_, &gpuMetrics);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get GPU metrics. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
     adlx_bool supported = false;
     result = gpuMetricsSupport->IsSupportedGPUTemperature(&supported);
 
-    if (!ADLX_SUCCEEDED(result) || !supported) {
+    if (!ADLX_SUCCEEDED(result) || !supported)
+    {
         errorStatus << "Failed to get GPU temperature support, or GPU temperature is not supported. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
     adlx_double temp = 0;
     result = gpuMetrics->GPUTemperature(&temp);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get GPU temperature. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
@@ -146,16 +181,20 @@ uint32_t AmdGpuMetrics::GetGpuTemperature()
 uint64_t AmdGpuMetrics::GetUsedMemory()
 {
     std::stringstream errorStatus;
-    if (!initialized_) {
+    if (!initialized_)
+    {
         errorStatus << "Not initialized";
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
     adlx::IADLXGPUMetricsSupportPtr gpuMetricsSupport;
     ADLX_RESULT result = perfMonitoringServices_->GetSupportedGPUMetrics(gpu_, &gpuMetricsSupport);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get GPU metrics support. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
@@ -163,32 +202,40 @@ uint64_t AmdGpuMetrics::GetUsedMemory()
 
     result = perfMonitoringServices_->GetCurrentAllMetrics(&allMetrics);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get all metrics. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
     adlx::IADLXGPUMetricsPtr gpuMetrics;
     result = allMetrics->GetGPUMetrics(gpu_, &gpuMetrics);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get GPU metrics. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
     adlx_bool supported = false;
     result = gpuMetricsSupport->IsSupportedGPUTemperature(&supported);
 
-    if (!ADLX_SUCCEEDED(result) || !supported) {
+    if (!ADLX_SUCCEEDED(result) || !supported)
+    {
         errorStatus << "Failed to get GPU memory support, or GPU memory query is not supported. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
     adlx_int vram = 0;
     result = gpuMetrics->GPUVRAM(&vram);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get GPU memory. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
@@ -202,8 +249,10 @@ uint64_t AmdGpuMetrics::GetTotalMemory()
 
     ADLX_RESULT result = gpu_->TotalVRAM(&totalVram);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get total VRAM. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
@@ -212,8 +261,9 @@ uint64_t AmdGpuMetrics::GetTotalMemory()
 
 uint32_t AmdGpuMetrics::GetGpuPowerUsage()
 {
-     std::stringstream errorStatus;
-    if (!initialized_) {
+    std::stringstream errorStatus;
+    if (!initialized_)
+    {
         errorStatus << "Not initialized";
         return 0;
     }
@@ -221,8 +271,10 @@ uint32_t AmdGpuMetrics::GetGpuPowerUsage()
     adlx::IADLXGPUMetricsSupportPtr gpuMetricsSupport;
     ADLX_RESULT result = perfMonitoringServices_->GetSupportedGPUMetrics(gpu_, &gpuMetricsSupport);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get GPU metrics support. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
@@ -230,39 +282,48 @@ uint32_t AmdGpuMetrics::GetGpuPowerUsage()
 
     result = perfMonitoringServices_->GetCurrentAllMetrics(&allMetrics);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get all metrics. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
     adlx::IADLXGPUMetricsPtr gpuMetrics;
     result = allMetrics->GetGPUMetrics(gpu_, &gpuMetrics);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get GPU metrics. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
     adlx_bool supported = false;
     result = gpuMetricsSupport->IsSupportedGPUPower(&supported);
 
-    if (!ADLX_SUCCEEDED(result) || !supported) {
+    if (!ADLX_SUCCEEDED(result) || !supported)
+    {
         errorStatus << "Failed to get GPU power support, or GPU power is not supported. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
     adlx_double power = 0;
     result = gpuMetrics->GPUPower(&power);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get GPU power. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
     return static_cast<uint32_t>(std::trunc(power));
 }
 
-void AmdGpuMetrics::LaunchAssociatedApp() {
+void AmdGpuMetrics::LaunchAssociatedApp()
+{
     STARTUPINFO startupInfo;
     PROCESS_INFORMATION processInformation;
 
@@ -273,31 +334,34 @@ void AmdGpuMetrics::LaunchAssociatedApp() {
     LPCTSTR path = R"(C:\Program Files\AMD\CNext\CNext\RadeonSoftware.exe)";
 
     CreateProcess(
-            path,
-            nullptr,
-            nullptr,
-            nullptr,
-            FALSE,
-            0,
-            nullptr,
-            nullptr,
-            &startupInfo,
-            &processInformation
-    );
+        path,
+        nullptr,
+        nullptr,
+        nullptr,
+        FALSE,
+        0,
+        nullptr,
+        nullptr,
+        &startupInfo,
+        &processInformation);
 
     CloseHandle(processInformation.hProcess);
     CloseHandle(processInformation.hThread);
 }
 
-std::vector<Gpu> AmdGpuMetrics::GetGpus() {
+std::vector<Gpu> AmdGpuMetrics::GetGpus()
+{
     std::vector<Gpu> gpus;
     std::stringstream errorStatus;
 
     // Again, check so we don't have to reinitialize ADLX
-    if (!initialized_) {
+    if (!initialized_)
+    {
         ADLX_RESULT result = g_ADLX.Initialize();
-        if (!ADLX_SUCCEEDED(result)) {
+        if (!ADLX_SUCCEEDED(result))
+        {
             errorStatus << "Failed to initialize ADLX. Error: " << result;
+            SD_LOG(LogLevel::Error, errorStatus.str());
             initialized_ = false;
             return gpus;
         }
@@ -307,29 +371,38 @@ std::vector<Gpu> AmdGpuMetrics::GetGpus() {
     adlx::IADLXGPUListPtr devices;
     ADLX_RESULT result = g_ADLX.GetSystemServices()->GetGPUs(&devices);
 
-    if (!ADLX_SUCCEEDED(result)) {
+    if (!ADLX_SUCCEEDED(result))
+    {
         errorStatus << "Failed to get devices. Error: " << result;
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return gpus;
     }
 
-    for (adlx_uint i = 0; i < devices->Size(); ++i) {
+    for (adlx_uint i = 0; i < devices->Size(); ++i)
+    {
         adlx::IADLXGPUPtr device;
         result = devices->At(i, &device);
 
-        if (!ADLX_SUCCEEDED(result)) {
+        if (!ADLX_SUCCEEDED(result))
+        {
             errorStatus << "Failed to get device at index " << i << ". Error: " << result;
+            SD_LOG(LogLevel::Error, errorStatus.str());
             continue;
         }
 
         ADLX_GPU_TYPE type;
         result = device->Type(&type);
 
-        if (!ADLX_SUCCEEDED(result)) {
+        if (!ADLX_SUCCEEDED(result))
+        {
             errorStatus << "Failed to get device type. Error: " << result;
+            SD_LOG(LogLevel::Error, errorStatus.str());
             continue;
         }
 
-        if (type == ADLX_GPU_TYPE::GPUTYPE_INTEGRATED) {
+        if (type == ADLX_GPU_TYPE::GPUTYPE_INTEGRATED)
+        {
+            SD_LOG(LogLevel::Error, "Device is integrated. Skipping.");
             continue;
         }
 
@@ -337,17 +410,21 @@ std::vector<Gpu> AmdGpuMetrics::GetGpus() {
 
         result = device->Name(&name);
 
-        if (!ADLX_SUCCEEDED(result)) {
+        if (!ADLX_SUCCEEDED(result))
+        {
             errorStatus << "Failed to get device name. Error: " << result;
+            SD_LOG(LogLevel::Error, errorStatus.str());
             continue;
         }
 
-        const char* deviceId = "";
+        const char *deviceId = "";
 
         result = device->DeviceId(&deviceId);
 
-        if (!ADLX_SUCCEEDED(result)) {
+        if (!ADLX_SUCCEEDED(result))
+        {
             errorStatus << "Failed to get device id. Error: " << result;
+            SD_LOG(LogLevel::Error, errorStatus.str());
             continue;
         }
 
@@ -362,8 +439,10 @@ std::vector<Gpu> AmdGpuMetrics::GetGpus() {
     return gpus;
 }
 
-void AmdGpuMetrics::Shutdown() {
-    if (initialized_) {
+void AmdGpuMetrics::Shutdown()
+{
+    if (initialized_)
+    {
         g_ADLX.Terminate();
         initialized_ = false;
     }

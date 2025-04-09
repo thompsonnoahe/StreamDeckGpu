@@ -1,12 +1,14 @@
-# Stream Deck GPU Metrics
+![Gpu Banner](com.nthompson.gpu-metrics.sdPlugin/imgs/plugin/GPU%20Metrics%20Banner.png)
+
+# Stream Deck GPU Metrics 📊
 
 A plugin for monitoring metrics of your GPU on the Elgato Stream Deck. Windows only.
 
-# Installation
+# Installation ⚙️
 
 Download the latest sdPlugin file from the [Releases](https://github.com/thompsonnoahe/StreamDeckGpu/releases) link on GitHub, and double-click it to install.
 
-# Building
+# Building 🛠️
 
 ## Prerequisites
 
@@ -22,6 +24,6 @@ Setup the repo as follows:
 git clone --recurse-submodules https://github.com/thompsonnoahe/StreamDeckGpu
 cd StreamDeckGpu
 npm install
-npm run install
-npm watch
+npm run compile
+npm run watch
 ```

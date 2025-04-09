@@ -1,33 +1,45 @@
 #include <sstream>
 #include "NvidiaGpuMetrics.hpp"
+#include "../../Logger.hpp"
 
-NvidiaGpuMetrics::NvidiaGpuMetrics(std::string deviceId) {
+NvidiaGpuMetrics::NvidiaGpuMetrics(std::string deviceId)
+{
     nvmlReturn_t status;
 
     // Check so we don't have to reinitialize NVML
-    if (!initialized_) {
+    if (!initialized_)
+    {
         nvmlReturn_t init = nvmlInit();
-        if (init != NVML_SUCCESS) {
+        if (init != NVML_SUCCESS)
+        {
             std::stringstream error_status;
             error_status << "Failed to initialize NVML. Error: " << nvmlErrorString(init);
+            SD_LOG(LogLevel::Error, error_status.str());
             return;
         }
         initialized_ = true;
     }
 
-    if (status = nvmlDeviceGetHandleByUUID(deviceId.c_str(), &device_); status != NVML_SUCCESS) {
+    if (status = nvmlDeviceGetHandleByUUID(deviceId.c_str(), &device_); status != NVML_SUCCESS)
+    {
         std::stringstream error_status;
         error_status << "Failed to query device. Error: " << nvmlErrorString(status);
+        SD_LOG(LogLevel::Error, error_status.str());
         return;
     }
+
+    SD_LOG(LogLevel::Info, "NVIDIA GPU metrics initialized successfully.");
 }
 
-uint32_t NvidiaGpuMetrics::GetGpuUsage() {
+uint32_t NvidiaGpuMetrics::GetGpuUsage()
+{
     nvmlUtilization_t utilization;
 
-    if (nvmlReturn_t status = nvmlDeviceGetUtilizationRates(device_, &utilization); status != NVML_SUCCESS) {
+    if (nvmlReturn_t status = nvmlDeviceGetUtilizationRates(device_, &utilization); status != NVML_SUCCESS)
+    {
         std::stringstream error_status;
         error_status << "Failed to query utilization. Error: " << nvmlErrorString(status);
+        SD_LOG(LogLevel::Error, error_status.str());
         return 0;
     }
 
@@ -37,9 +49,11 @@ uint32_t NvidiaGpuMetrics::GetGpuUsage() {
 uint32_t NvidiaGpuMetrics::GetGpuTemperature()
 {
     uint32_t temperature;
-    if (nvmlReturn_t status = nvmlDeviceGetTemperature(device_, NVML_TEMPERATURE_GPU, &temperature); status != NVML_SUCCESS) {
+    if (nvmlReturn_t status = nvmlDeviceGetTemperature(device_, NVML_TEMPERATURE_GPU, &temperature); status != NVML_SUCCESS)
+    {
         std::stringstream error_status;
         error_status << "Failed to query temperature. Error: " << nvmlErrorString(status);
+        SD_LOG(LogLevel::Error, error_status.str());
         return 0;
     }
 
@@ -50,9 +64,11 @@ uint64_t NvidiaGpuMetrics::GetUsedMemory()
 {
     nvmlMemory_t memory;
 
-    if (nvmlReturn_t status = nvmlDeviceGetMemoryInfo(device_, &memory); status != NVML_SUCCESS) {
+    if (nvmlReturn_t status = nvmlDeviceGetMemoryInfo(device_, &memory); status != NVML_SUCCESS)
+    {
         std::stringstream error_status;
         error_status << "Failed to query memory. Error: " << nvmlErrorString(status);
+        SD_LOG(LogLevel::Error, error_status.str());
         return 0;
     }
 
@@ -63,9 +79,11 @@ uint64_t NvidiaGpuMetrics::GetTotalMemory()
 {
     nvmlMemory_t memory;
 
-    if (nvmlReturn_t status = nvmlDeviceGetMemoryInfo(device_, &memory); status != NVML_SUCCESS) {
+    if (nvmlReturn_t status = nvmlDeviceGetMemoryInfo(device_, &memory); status != NVML_SUCCESS)
+    {
         std::stringstream error_status;
         error_status << "Failed to query memory. Error: " << nvmlErrorString(status);
+        SD_LOG(LogLevel::Error, error_status.str());
         return 0;
     }
 
@@ -76,50 +94,64 @@ uint32_t NvidiaGpuMetrics::GetGpuPowerUsage()
 {
     uint32_t powerUsage;
 
-    if (nvmlReturn_t status = nvmlDeviceGetPowerUsage(device_, &powerUsage); status != NVML_SUCCESS) {
+    if (nvmlReturn_t status = nvmlDeviceGetPowerUsage(device_, &powerUsage); status != NVML_SUCCESS)
+    {
         std::stringstream errorStatus;
         errorStatus << "Failed to query power usage. Error: " << nvmlErrorString(status);
+        SD_LOG(LogLevel::Error, errorStatus.str());
         return 0;
     }
 
     return powerUsage;
 }
 
-std::vector<Gpu> NvidiaGpuMetrics::GetGpus() {
+std::vector<Gpu> NvidiaGpuMetrics::GetGpus()
+{
     std::vector<Gpu> gpus;
 
     // Again, check so we don't have to reinitialize NVML
-    if (!initialized_) {
+    if (!initialized_)
+    {
         nvmlReturn_t init = nvmlInit();
-        if (init != NVML_SUCCESS) {
+        if (init != NVML_SUCCESS)
+        {
             std::stringstream error_status;
             error_status << "Failed to initialize NVML. Error: " << nvmlErrorString(init);
+            SD_LOG(LogLevel::Error, error_status.str());
             return gpus;
         }
         initialized_ = true;
     }
 
     uint32_t count;
-    if (nvmlReturn_t status = nvmlDeviceGetCount(&count); status != NVML_SUCCESS) {
+    if (nvmlReturn_t status = nvmlDeviceGetCount(&count); status != NVML_SUCCESS)
+    {
         std::stringstream error_status;
         error_status << "Failed to query device count. Error: " << nvmlErrorString(status);
+        SD_LOG(LogLevel::Error, error_status.str());
         return gpus;
     }
 
-    for (uint32_t i = 0; i < count; ++i) {
+    for (uint32_t i = 0; i < count; ++i)
+    {
         nvmlDevice_t device;
-        if (nvmlReturn_t status = nvmlDeviceGetHandleByIndex(i, &device); status != NVML_SUCCESS) {
+        if (nvmlReturn_t status = nvmlDeviceGetHandleByIndex(i, &device); status != NVML_SUCCESS)
+        {
             std::stringstream error_status;
             error_status << "Failed to query device. Error: " << nvmlErrorString(status);
+            SD_LOG(LogLevel::Error, error_status.str());
             continue;
         }
 
         char *name = new char[NVML_DEVICE_NAME_V2_BUFFER_SIZE];
 
         if (nvmlReturn_t status = nvmlDeviceGetName(device, name, NVML_DEVICE_NAME_V2_BUFFER_SIZE); status !=
-                                                                                                    NVML_SUCCESS) {
+                                                                                                    NVML_SUCCESS)
+        {
             std::stringstream error_status;
             error_status << "Failed to query device name. Error: " << nvmlErrorString(status);
+            SD_LOG(LogLevel::Error, error_status.str());
+            delete[] name;
             continue;
         }
 
@@ -127,9 +159,13 @@ std::vector<Gpu> NvidiaGpuMetrics::GetGpus() {
 
         // Get the device UUID so we can select the GPU in the property inspector once settings are received
         if (nvmlReturn_t status = nvmlDeviceGetUUID(device, deviceId, NVML_DEVICE_UUID_V2_BUFFER_SIZE); status !=
-                                                                                                        NVML_SUCCESS) {
+                                                                                                        NVML_SUCCESS)
+        {
             std::stringstream error_status;
             error_status << "Failed to query device id. Error: " << nvmlErrorString(status);
+            SD_LOG(LogLevel::Error, error_status.str());
+            delete[] name;
+            delete[] deviceId;
             continue;
         }
 
@@ -144,7 +180,8 @@ std::vector<Gpu> NvidiaGpuMetrics::GetGpus() {
     return gpus;
 }
 
-void NvidiaGpuMetrics::LaunchAssociatedApp() {
+void NvidiaGpuMetrics::LaunchAssociatedApp()
+{
     STARTUPINFO startupInfo;
     PROCESS_INFORMATION processInformation;
 
@@ -164,18 +201,20 @@ void NvidiaGpuMetrics::LaunchAssociatedApp() {
         nullptr,
         nullptr,
         &startupInfo,
-        &processInformation
-    );
+        &processInformation);
 
     CloseHandle(processInformation.hProcess);
     CloseHandle(processInformation.hThread);
 }
 
-void NvidiaGpuMetrics::Shutdown() {
+void NvidiaGpuMetrics::Shutdown()
+{
     nvmlReturn_t status = nvmlShutdown();
-    if (status != NVML_SUCCESS) {
+    if (status != NVML_SUCCESS)
+    {
         std::stringstream error_status;
         error_status << "Failed to shutdown NVML. Error: " << nvmlErrorString(status);
+        SD_LOG(LogLevel::Error, error_status.str());
     }
     initialized_ = false;
 }

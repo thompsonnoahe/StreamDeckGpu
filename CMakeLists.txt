@@ -16,7 +16,8 @@ set(SOURCE_FILES src/cpp/GpuAddon.cpp
   src/cpp/windows/amd/AmdGpuMetrics.cpp
   src/cpp/windows/nvidia/NvidiaGpuMetrics.cpp
   src/cpp/windows/Interfaces.hpp
-  src/cpp/GpuAbstraction.cpp)
+  src/cpp/GpuAbstraction.cpp
+  src/cpp/Logger.cpp)
 
 set(THIRD_PARTY_AMD_INCLUDE src/cpp/third-party/amd/SDK/ADLXHelper/Windows/Cpp/ADLXHelper.h)
 set(THIRD_PARTY_AMD_SRC src/cpp/third-party/amd/SDK/ADLXHelper/Windows/Cpp/ADLXHelper.cpp)

@@ -13,8 +13,10 @@
 #include "windows/Interfaces.hpp"
 #include "windows/nvidia/NvidiaGpuMetrics.hpp"
 #include "windows/amd/AmdGpuMetrics.hpp"
+#include "Logger.hpp"
 
-enum class GpuVendor : int32_t {
+enum class GpuVendor : int32_t
+{
     Nvidia,
     Amd,
     Unknown,
@@ -23,39 +25,42 @@ enum class GpuVendor : int32_t {
 struct Gpu
 {
     GpuVendor vendor;
-    const char* name;
+    const char *name;
     uint32_t index;
-    const char* deviceId;
-    IGpuMetrics* metrics;
+    const char *deviceId;
+    IGpuMetrics *metrics;
 };
 
-class GpuWrapper : public Napi::ObjectWrap<GpuWrapper> {
-    public:
-        GpuWrapper(const Napi::CallbackInfo &info);
-        static Napi::Function GetClass(Napi::Env env);
-        Napi::Value GetVendor(const Napi::CallbackInfo &info);
-        Napi::Value GetName(const Napi::CallbackInfo &info);
-        Napi::Value GetIndex(const Napi::CallbackInfo &info);
-        Napi::Value GetDeviceId(const Napi::CallbackInfo &info);
-        Napi::Value GetGpuUsage(const Napi::CallbackInfo &info);
-        Napi::Value GetGpuTemperature(const Napi::CallbackInfo &info);
-        Napi::Value GetGpuMemoryUsed(const Napi::CallbackInfo &info);
-        Napi::Value GetGpuMemory(const Napi::CallbackInfo &info);
-        Napi::Value GetGpuPower(const Napi::CallbackInfo &info);
-        void LaunchAssociatedApp(const Napi::CallbackInfo &info);
-        void Finalize(Napi::Env env) override;
-    private:
-        Gpu* gpu_;
+class GpuWrapper : public Napi::ObjectWrap<GpuWrapper>
+{
+public:
+    GpuWrapper(const Napi::CallbackInfo &info);
+    static Napi::Function GetClass(Napi::Env env);
+    Napi::Value GetVendor(const Napi::CallbackInfo &info);
+    Napi::Value GetName(const Napi::CallbackInfo &info);
+    Napi::Value GetIndex(const Napi::CallbackInfo &info);
+    Napi::Value GetDeviceId(const Napi::CallbackInfo &info);
+    Napi::Value GetGpuUsage(const Napi::CallbackInfo &info);
+    Napi::Value GetGpuTemperature(const Napi::CallbackInfo &info);
+    Napi::Value GetGpuMemoryUsed(const Napi::CallbackInfo &info);
+    Napi::Value GetGpuMemory(const Napi::CallbackInfo &info);
+    Napi::Value GetGpuPower(const Napi::CallbackInfo &info);
+    void LaunchAssociatedApp(const Napi::CallbackInfo &info);
+    void Finalize(Napi::Env env) override;
+
+private:
+    Gpu *gpu_;
 };
 
-class GpuQuery : public Napi::ObjectWrap<GpuQuery>  {
-    public: 
-        GpuQuery(const Napi::CallbackInfo &info) : Napi::ObjectWrap<GpuQuery>(info) {};
-        Napi::Value GetVendor(const Napi::CallbackInfo &info);
-        static Napi::Function GetClass(Napi::Env env);
-        Napi::Value GetGpus(const Napi::CallbackInfo &info);
-    private:
-        std::vector<Gpu> QueryGpus(const Napi::CallbackInfo &info);
-        std::vector<Gpu> gpus_;
-};
+class GpuQuery : public Napi::ObjectWrap<GpuQuery>
+{
+public:
+    GpuQuery(const Napi::CallbackInfo &info) : Napi::ObjectWrap<GpuQuery>(info) {};
+    Napi::Value GetVendor(const Napi::CallbackInfo &info);
+    static Napi::Function GetClass(Napi::Env env);
+    Napi::Value GetGpus(const Napi::CallbackInfo &info);
 
+private:
+    std::vector<Gpu> QueryGpus(const Napi::CallbackInfo &info);
+    std::vector<Gpu> gpus_;
+};

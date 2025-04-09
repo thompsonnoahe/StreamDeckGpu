@@ -6,7 +6,7 @@
 		{
 			"Name": "GPU Utilization",
 			"UUID": "com.nthompson.gpu-metrics.usage",
-			"Icon": "imgs/plugin/icon",
+			"Icon": "imgs/plugin/Gauge",
 			"Tooltip": "Displays the current GPU utilization.",
 			"PropertyInspectorPath": "ui/gpu-usage.html",
 			"Controllers": [
@@ -23,7 +23,7 @@
 		{
 			"Name": "GPU Temperature",
 			"UUID": "com.nthompson.gpu-metrics.temp",
-			"Icon": "imgs/plugin/icon",
+			"Icon": "imgs/plugin/Temp",
 			"Tooltip": "Displays the current GPU temperature.",
 			"PropertyInspectorPath": "ui/gpu-temp.html",
 			"Controllers": [
@@ -40,7 +40,7 @@
 		{
 			"Name": "GPU Memory",
 			"UUID": "com.nthompson.gpu-metrics.mem",
-			"Icon": "imgs/plugin/icon",
+			"Icon": "imgs/plugin/Mem",
 			"Tooltip": "Displays the current GPU memory usage.",
 			"PropertyInspectorPath": "ui/gpu-mem.html",
 			"Controllers": [
@@ -57,7 +57,7 @@
 		{
 			"Name": "GPU Power",
 			"UUID": "com.nthompson.gpu-metrics.power",
-			"Icon": "imgs/plugin/icon",
+			"Icon": "imgs/plugin/Bolt",
 			"Tooltip": "Displays the current GPU power usage.",
 			"PropertyInspectorPath": "ui/gpu-power.html",
 			"Controllers": [
@@ -73,7 +73,7 @@
 		}
 	],
 	"Category": "GPU Metrics",
-	"CategoryIcon": "imgs/plugin/category-icon",
+	"CategoryIcon": "imgs/plugin/gpu",
 	"CodePath": "bin/plugin.js",
 	"Description": "Displays information about your GPU.",
 	"Icon": "imgs/plugin/icon",
