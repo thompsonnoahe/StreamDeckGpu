@@ -24,6 +24,9 @@ jobs:
         - language: javascript-typescript
           build-mode: none
     steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
     - uses: github/codeql-action/init@v3
       with:
           languages: ${{ matrix.language }}
@@ -31,9 +34,6 @@ jobs:
     - uses: github/codeql-action/analyze@v3
       with:
           category: "/language:${{ matrix.language }}"
-    - uses: actions/checkout@v4
-      with:
-        submodules: recursive
     - uses: Jimver/cuda-toolkit@v0.2.15
       id: cuda-toolkit
       with:
