@@ -7,7 +7,7 @@ import url from "node:url";
 import copy from "rollup-plugin-copy";
 
 const isWatching = !!process.env.ROLLUP_WATCH;
-const sdPlugin = "com.nthompson.gpu-metrics.sdPlugin";
+const sdPlugin = "com.nthompson.gpu.sdPlugin";
 
 /**
  * @type {import('rollup').RollupOptions}
@@ -50,7 +50,7 @@ const config = {
 			overwrite: true,
 			targets: [
 				{
-					src: "build/Release/gpu-metrics.node",
+					src: "build/Release/gpu.node",
 					dest: `${sdPlugin}/bin/`
 				}
 			]

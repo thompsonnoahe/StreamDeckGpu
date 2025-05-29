@@ -9,7 +9,7 @@ enum LogLevel {
   Debug,
 }
 
-const gpuAddon = require('./gpu-metrics.node');
+const gpuAddon = require('./gpu.node');
 
 const query = new gpuAddon.GpuQuery();
 

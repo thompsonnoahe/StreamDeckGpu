@@ -12,7 +12,7 @@ import query from '../query';
 import { Gpu } from '../types/gpu';
 import Vendor from '../types/vendor';
 
-@action({ UUID: 'com.nthompson.gpu-metrics.mem' })
+@action({ UUID: 'com.nthompson.gpu.mem' })
 export class GpuMemoryUsage extends SingletonAction<GpuMemoryUsageSettings> {
   timers: Map<string, NodeJS.Timeout> = new Map();
   query = query;

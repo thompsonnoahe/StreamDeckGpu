@@ -1,11 +1,11 @@
 {
 	"Name": "GPU Metrics",
-	"Version": "1.0.0.0",
+	"Version": "2.0.0.0",
 	"Author": "Noah Thompson",
 	"Actions": [
 		{
 			"Name": "GPU Utilization",
-			"UUID": "com.nthompson.gpu-metrics.usage",
+			"UUID": "com.nthompson.gpu.usage",
 			"Icon": "imgs/plugin/Gauge",
 			"Tooltip": "Displays the current GPU utilization.",
 			"PropertyInspectorPath": "ui/gpu-usage.html",
@@ -22,7 +22,7 @@
 		},
 		{
 			"Name": "GPU Temperature",
-			"UUID": "com.nthompson.gpu-metrics.temp",
+			"UUID": "com.nthompson.gpu.temp",
 			"Icon": "imgs/plugin/Temp",
 			"Tooltip": "Displays the current GPU temperature.",
 			"PropertyInspectorPath": "ui/gpu-temp.html",
@@ -39,7 +39,7 @@
 		},
 		{
 			"Name": "GPU Memory",
-			"UUID": "com.nthompson.gpu-metrics.mem",
+			"UUID": "com.nthompson.gpu.mem",
 			"Icon": "imgs/plugin/Mem",
 			"Tooltip": "Displays the current GPU memory usage.",
 			"PropertyInspectorPath": "ui/gpu-mem.html",
@@ -56,7 +56,7 @@
 		},
 		{
 			"Name": "GPU Power",
-			"UUID": "com.nthompson.gpu-metrics.power",
+			"UUID": "com.nthompson.gpu.power",
 			"Icon": "imgs/plugin/Bolt",
 			"Tooltip": "Displays the current GPU power usage.",
 			"PropertyInspectorPath": "ui/gpu-power.html",
@@ -91,5 +91,5 @@
 		"Version": "20",
 		"Debug": "enabled"
 	},
-	"UUID": "com.nthompson.gpu-metrics"
+	"UUID": "com.nthompson.gpu"
 }

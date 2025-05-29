@@ -11,7 +11,7 @@ import {
 import query from '../query';
 import { Gpu } from '../types/gpu';
 
-@action({ UUID: 'com.nthompson.gpu-metrics.temp' })
+@action({ UUID: 'com.nthompson.gpu.temp' })
 export class GpuTemp extends SingletonAction<GpuTempSettings> {
   timers: Map<string, NodeJS.Timeout> = new Map();
   query = query;

@@ -11,7 +11,7 @@ import query from '../query';
 import { Gpu } from '../types/gpu';
 import Vendor from '../types/vendor';
 
-@action({ UUID: 'com.nthompson.gpu-metrics.power' })
+@action({ UUID: 'com.nthompson.gpu.power' })
 export class GpuPowerUsage extends SingletonAction<GpuPowerUsageSettings> {
   timers: Map<string, NodeJS.Timeout> = new Map();
   query = query;
