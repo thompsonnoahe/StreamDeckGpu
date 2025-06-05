@@ -69,7 +69,7 @@ export class GpuTemp extends SingletonAction<GpuTempSettings> {
   ): Promise<void> | void {
     const gpus = this.devices.map((gpu: Gpu) => {
       return {
-        title: gpu.name,
+        title: "#" + gpu.index + " " + gpu.name,
         value: gpu.deviceId,
       };
     });
