@@ -87,7 +87,6 @@ export class GpuPowerUsage extends ActionWithChart<GpuPowerUsageSettings> {
 }
 
 type GpuPowerUsageSettings = {
-  gpuId: string;
   minWatts: string;
   maxWatts: string;
 } & Settings &

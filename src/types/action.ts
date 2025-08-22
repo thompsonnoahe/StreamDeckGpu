@@ -14,7 +14,7 @@ import { Window } from 'happy-dom';
 
 export class Settings {
   gpuId: string = '';
-  chartColor: string = '#d8d8d8';
+  chartColor: string = '#aaaaaa';
   enableChart: boolean = false;
 }
 
@@ -67,7 +67,7 @@ export default class ActionWithChart<
     svg
       .append('path')
       .attr('d', area(buff?.buffer ?? [[Date.now(), gpuMetric]]))
-      .attr('fill', settings.chartColor);
+      .attr('fill', settings.chartColor || '#aaaaaa');
 
     return svg;
   }

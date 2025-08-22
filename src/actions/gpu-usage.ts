@@ -73,7 +73,4 @@ export class GpuUsage extends ActionWithChart<GpuUsageSettings> {
   }
 }
 
-type GpuUsageSettings = {
-  chartColor: string;
-} & Settings &
-  JsonObject;
+type GpuUsageSettings = {} & Settings & JsonObject;

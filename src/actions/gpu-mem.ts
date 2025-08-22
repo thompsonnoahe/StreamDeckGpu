@@ -116,7 +116,6 @@ export class GpuMemoryUsage extends ActionWithChart<GpuMemoryUsageSettings> {
 }
 
 type GpuMemoryUsageSettings = {
-  gpuId: string;
   showAsPercentage: boolean;
 } & Settings &
   JsonObject;
