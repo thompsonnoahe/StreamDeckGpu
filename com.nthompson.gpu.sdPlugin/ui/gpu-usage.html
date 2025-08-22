@@ -21,15 +21,23 @@
     </sdpi-item>
     <sdpi-item>
       <sdpi-checkbox
+        id="chartCheckbox"
         setting="enableChart"
         label="Enable chart?"
       ></sdpi-checkbox>
     </sdpi-item>
     <sdpi-item label="Chart Color">
-      <sdpi-color setting="chartColor"></sdpi-color>
+      <sdpi-color id="color" setting="chartColor"></sdpi-color>
     </sdpi-item>
 
     <script>
+      const control = document
+        .getElementById('chartCheckbox')
+        .addEventListener('valuechange', e => {
+          const colorControl = document.getElementById('color');
+          colorControl.disabled = !e.target.value;
+        });
+
       const { streamDeckClient } = SDPIComponents;
 
       streamDeckClient.sendToPropertyInspector.subscribe(e => {

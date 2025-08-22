@@ -1,30 +1,35 @@
 import {
   action,
-  PropertyInspectorDidAppearEvent,
-  SingletonAction,
   WillAppearEvent,
   streamDeck,
   DidReceiveSettingsEvent,
-  KeyDownEvent,
-  WillDisappearEvent,
+  JsonObject,
 } from '@elgato/streamdeck';
-import query from '../query';
 import { Gpu } from '../types/gpu';
+import ActionWithChart, { Settings } from '../types/action';
+import { height, width } from '../utils/constants';
+import Buffer from '../utils/buffer';
+import * as d3 from 'd3';
 
 @action({ UUID: 'com.nthompson.gpu.temp' })
-export class GpuTemp extends SingletonAction<GpuTempSettings> {
-  timers: Map<string, NodeJS.Timeout> = new Map();
-  query = query;
-  devices = this.query.getGpus();
-
-  getGpu(gpuId: string): Gpu | undefined {
-    return this.devices.find((gpu: Gpu) => gpu.deviceId === gpuId);
-  }
-
-  startTimer(gpu: Gpu, action: any, celsius: boolean = true): void {
+export class GpuTemp extends ActionWithChart<GpuTempSettings> {
+  startTimer(
+    gpu: Gpu,
+    action: any,
+    celsius: boolean = true,
+    settings: GpuTempSettings
+  ): void {
     if (this.timers.has(action.id)) {
       clearInterval(this.timers.get(action.id)!);
     }
+
+    this.buffers.set(action.id, new Buffer<[number, number]>(width));
+
+    const svg = d3
+      .select(this.window.document.body)
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height);
 
     this.timers.set(
       action.id,
@@ -46,6 +51,24 @@ export class GpuTemp extends SingletonAction<GpuTempSettings> {
         }
 
         action.setTitle(`${temp}°${celsius ? 'C' : 'F'}`);
+
+        if (settings.enableChart) {
+          const chart = this.createChart(
+            svg,
+            temp,
+            settings,
+            action,
+            Number.parseInt(settings.minTemp ?? '0'),
+            Number.parseInt(settings.maxTemp ?? '100')
+          );
+
+          action.setImage(
+            `data:image/svg+xml;charset=utf8,${encodeURIComponent(chart.node())}`
+          );
+        } else {
+          // Reset the image if the user flips back between chart or image
+          action.setImage('gpu.png');
+        }
       }, 1000)
     );
   }
@@ -61,25 +84,7 @@ export class GpuTemp extends SingletonAction<GpuTempSettings> {
       celsius = false;
     }
 
-    this.startTimer(gpu!, ev.action, celsius);
-  }
-
-  override onPropertyInspectorDidAppear(
-    ev: PropertyInspectorDidAppearEvent<GpuTempSettings>
-  ): Promise<void> | void {
-    const gpus = this.devices.map((gpu: Gpu) => {
-      return {
-        title: gpu.name,
-        value: gpu.deviceId,
-      };
-    });
-
-    streamDeck.ui.current?.sendToPropertyInspector(gpus);
-  }
-
-  override onKeyDown(ev: KeyDownEvent<GpuTempSettings>): Promise<void> | void {
-    const gpu = this.getGpu(ev.payload.settings.gpuId);
-    gpu?.launchAssociatedApp();
+    this.startTimer(gpu!, ev.action, celsius, ev.payload.settings);
   }
 
   override onWillAppear(
@@ -93,15 +98,14 @@ export class GpuTemp extends SingletonAction<GpuTempSettings> {
       celsius = false;
     }
 
-    this.startTimer(gpu!, ev.action, celsius);
-  }
-
-  override onWillDisappear(ev: WillDisappearEvent<GpuTempSettings>): void {
-    clearInterval(this.timers.get(ev.action.id));
+    this.startTimer(gpu!, ev.action, celsius, ev.payload.settings);
   }
 }
 
 type GpuTempSettings = {
   gpuId: string;
   temp: string;
-};
+  minTemp?: string;
+  maxTemp?: string;
+} & Settings &
+  JsonObject;
