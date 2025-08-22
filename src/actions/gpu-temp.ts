@@ -52,14 +52,16 @@ export class GpuTemp extends ActionWithChart<GpuTempSettings> {
 
         action.setTitle(`${temp}°${celsius ? 'C' : 'F'}`);
 
+        streamDeck.logger.debug(settings.maxTemp);
+
         if (settings.enableChart) {
           const chart = this.createChart(
             svg,
             temp,
             settings,
             action,
-            Number.parseInt(settings.minTemp ?? '0'),
-            Number.parseInt(settings.maxTemp ?? '100')
+            Number.parseInt(settings.minTemp || '0'),
+            Number.parseInt(settings.maxTemp || '100')
           );
 
           action.setImage(
@@ -105,7 +107,7 @@ export class GpuTemp extends ActionWithChart<GpuTempSettings> {
 type GpuTempSettings = {
   gpuId: string;
   temp: string;
-  minTemp?: string;
-  maxTemp?: string;
+  minTemp: string;
+  maxTemp: string;
 } & Settings &
   JsonObject;

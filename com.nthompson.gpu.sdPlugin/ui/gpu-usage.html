@@ -23,7 +23,7 @@
       <sdpi-checkbox
         id="chartCheckbox"
         setting="enableChart"
-        label="Enable chart?"
+        label="Enable chart"
       ></sdpi-checkbox>
     </sdpi-item>
     <sdpi-item label="Chart Color">
@@ -31,7 +31,7 @@
     </sdpi-item>
 
     <script>
-      const control = document
+      document
         .getElementById('chartCheckbox')
         .addEventListener('valuechange', e => {
           const colorControl = document.getElementById('color');

@@ -1,6 +1,7 @@
-import {
+import streamDeck, {
   JsonObject,
   KeyDownEvent,
+  PropertyInspectorDidAppearEvent,
   SingletonAction,
   WillDisappearEvent,
 } from '@elgato/streamdeck';
@@ -78,5 +79,18 @@ export default class ActionWithChart<
 
   override onWillDisappear(ev: WillDisappearEvent<T>): void {
     clearInterval(this.timers.get(ev.action.id));
+  }
+
+  override onPropertyInspectorDidAppear(
+    ev: PropertyInspectorDidAppearEvent<T>
+  ): Promise<void> | void {
+    const gpus = this.devices.map((gpu: Gpu) => {
+      return {
+        title: gpu.name,
+        value: gpu.deviceId,
+      };
+    });
+
+    streamDeck.ui.current?.sendToPropertyInspector(gpus);
   }
 }
