@@ -43,13 +43,13 @@ export class GpuTemp extends ActionWithChart<GpuTempSettings> {
     this.timers.set(
       action.id,
       setInterval(() => {
+        if (os.platform() === 'darwin') {
+          gpu = getMacOSMetrics();
+        }
+
         if (gpu === undefined) {
           streamDeck.logger.error('GPU not found or selected');
           return;
-        }
-
-        if (os.platform() === 'darwin') {
-          gpu = getMacOSMetrics();
         }
 
         let temp = gpu?.temperature;

@@ -33,13 +33,13 @@ export class GpuPowerUsage extends ActionWithChart<GpuPowerUsageSettings> {
     this.timers.set(
       action.id,
       setInterval(() => {
+        if (os.platform() === 'darwin') {
+          gpu = getMacOSMetrics();
+        }
+
         if (gpu === undefined) {
           streamDeck.logger.error('GPU not found or selected');
           return;
-        }
-
-        if (os.platform() === 'darwin') {
-          gpu = getMacOSMetrics();
         }
 
         let power = gpu.power;
