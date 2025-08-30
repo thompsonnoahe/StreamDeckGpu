@@ -15,11 +15,18 @@ import getMacOSMetrics from "../utils/converter";
 
 @action({ UUID: "com.nthompson.gpu.temp" })
 export class GpuTemp extends ActionWithChart<GpuTempSettings> {
+  startTimer(action: any, celsius: boolean, settings: GpuTempSettings): void;
   startTimer(
-    gpu: Gpu,
+    action: any,
+    celsius: boolean,
+    settings: GpuTempSettings,
+    gpu: Gpu
+  ): void;
+  startTimer(
     action: any,
     celsius: boolean = true,
-    settings: GpuTempSettings
+    settings: GpuTempSettings,
+    gpu?: Gpu
   ): void {
     if (this.timers.has(action.id)) {
       clearInterval(this.timers.get(action.id)!);
@@ -36,8 +43,15 @@ export class GpuTemp extends ActionWithChart<GpuTempSettings> {
     this.timers.set(
       action.id,
       setInterval(() => {
-        if (gpu === undefined) {
+        if (gpu === undefined && os.platform() === "win32") {
           streamDeck.logger.error("GPU not found or selected");
+          return;
+        }
+
+        if (os.platform() === "darwin") {
+          gpu = getMacOSMetrics();
+        } else {
+          streamDeck.logger.error("Unsupported platform.");
           return;
         }
 
@@ -78,38 +92,35 @@ export class GpuTemp extends ActionWithChart<GpuTempSettings> {
   override onDidReceiveSettings(
     ev: DidReceiveSettingsEvent<GpuTempSettings>
   ): Promise<void> | void {
-    let gpu: Gpu;
-    if (os.platform() !== "darwin") {
-      gpu = this.getGpu(ev.payload.settings.gpuId);
-    } else {
-      gpu = getMacOSMetrics();
-    }
     let celsius = true;
 
     if (ev.payload.settings.temp === "fahrenheit") {
       celsius = false;
     }
 
-    this.startTimer(gpu!, ev.action, celsius, ev.payload.settings);
+    if (os.platform() !== "darwin") {
+      const gpu = this.getGpu(ev.payload.settings.gpuId);
+      this.startTimer(ev.action, celsius, ev.payload.settings, gpu!);
+    } else {
+      this.startTimer(ev.action, celsius, ev.payload.settings);
+    }
   }
 
   override onWillAppear(
     ev: WillAppearEvent<GpuTempSettings>
   ): Promise<void> | void {
-    let gpu: Gpu;
-    if (os.platform() !== "darwin") {
-      gpu = this.getGpu(ev.payload.settings.gpuId);
-    } else {
-      gpu = getMacOSMetrics();
-    }
-
     let celsius = true;
 
     if (ev.payload.settings.temp === "fahrenheit") {
       celsius = false;
     }
 
-    this.startTimer(gpu!, ev.action, celsius, ev.payload.settings);
+    if (os.platform() !== "darwin") {
+      const gpu = this.getGpu(ev.payload.settings.gpuId);
+      this.startTimer(ev.action, celsius, ev.payload.settings, gpu!);
+    } else {
+      this.startTimer(ev.action, celsius, ev.payload.settings);
+    }
   }
 }
 

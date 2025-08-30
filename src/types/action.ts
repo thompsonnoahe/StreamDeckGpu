@@ -13,6 +13,7 @@ import query from "../query";
 import { Window } from "happy-dom";
 import * as os from "os";
 import { GpuMetrics } from "@thompsonnoahe/macos-metrics";
+import getMacOSMetrics from "../utils/converter";
 
 export class Settings {
   gpuId: string = "";
@@ -75,8 +76,13 @@ export default class ActionWithChart<
   }
 
   override onKeyDown(ev: KeyDownEvent<T>): Promise<void> | void {
-    const gpu = this.getGpu(ev.payload.settings.gpuId);
-    gpu?.launchAssociatedApp();
+    if (os.platform() === "win32") {
+      const gpu = this.getGpu(ev.payload.settings.gpuId);
+      gpu?.launchAssociatedApp();
+    } else {
+      const gpu = getMacOSMetrics();
+      gpu.launchAssociatedApp();
+    }
   }
 
   override onWillDisappear(ev: WillDisappearEvent<T>): void {

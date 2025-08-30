@@ -15,7 +15,9 @@ import getMacOSMetrics from "../utils/converter";
 
 @action({ UUID: "com.nthompson.gpu.usage" })
 export class GpuUsage extends ActionWithChart<GpuUsageSettings> {
-  startTimer(gpu: Gpu, action: any, settings: GpuUsageSettings): void {
+  startTimer(action: any, settings: GpuUsageSettings, gpu: Gpu): void;
+  startTimer(action: any, settings: GpuUsageSettings): void;
+  startTimer(action: any, settings: GpuUsageSettings, gpu?: Gpu): void {
     // Clear the timer for the action if it's replaced
     if (this.timers.has(action.id)) {
       clearInterval(this.timers.get(action.id));
@@ -32,8 +34,15 @@ export class GpuUsage extends ActionWithChart<GpuUsageSettings> {
     this.timers.set(
       action.id,
       setInterval(() => {
-        if (gpu === undefined) {
+        if (gpu === undefined && os.platform() === "win32") {
           streamDeck.logger.error("GPU not found or selected");
+          return;
+        }
+
+        if (os.platform() === "darwin") {
+          gpu = getMacOSMetrics();
+        } else {
+          streamDeck.logger.error("Unsupported platform.");
           return;
         }
 
@@ -70,9 +79,9 @@ export class GpuUsage extends ActionWithChart<GpuUsageSettings> {
     if (os.platform() !== "darwin") {
       const gpu = this.getGpu(ev.payload.settings.gpuId);
 
-      this.startTimer(gpu!, ev.action, ev.payload.settings);
+      this.startTimer(ev.action, ev.payload.settings, gpu!);
     } else {
-      this.startTimer(getMacOSMetrics(), ev.action, ev.payload.settings);
+      this.startTimer(ev.action, ev.payload.settings);
     }
   }
 
@@ -82,9 +91,9 @@ export class GpuUsage extends ActionWithChart<GpuUsageSettings> {
     if (os.platform() !== "darwin") {
       const gpu = this.getGpu(ev.payload.settings.gpuId);
 
-      this.startTimer(gpu!, ev.action, ev.payload.settings);
+      this.startTimer(ev.action, ev.payload.settings, gpu!);
     } else {
-      this.startTimer(getMacOSMetrics(), ev.action, ev.payload.settings);
+      this.startTimer(ev.action, ev.payload.settings);
     }
   }
 }
