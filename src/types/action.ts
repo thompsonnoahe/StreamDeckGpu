@@ -4,27 +4,27 @@ import streamDeck, {
   PropertyInspectorDidAppearEvent,
   SingletonAction,
   WillDisappearEvent,
-} from '@elgato/streamdeck';
-import { Gpu } from './gpu';
-import { width, height } from '../utils/constants';
-import * as d3 from 'd3';
-import Buffer from '../utils/buffer';
-import query from '../query';
-import { Window } from 'happy-dom';
-import * as os from 'os';
-import getMacOSMetrics from '../utils/converter';
-import { platform } from 'os';
+} from "@elgato/streamdeck";
+import { Gpu } from "./gpu";
+import { width, height } from "../utils/constants";
+import * as d3 from "d3";
+import Buffer from "../utils/buffer";
+import query from "../query";
+import { Window } from "happy-dom";
+import * as os from "os";
+import getMacOSMetrics from "../utils/converter";
+import { platform } from "os";
 export class Settings {
-  gpuId: string = '';
-  chartColor: string = '#aaaaaa';
+  gpuId: string = "";
+  chartColor: string = "#aaaaaa";
   enableChart: boolean = false;
 }
 
 type JsonSettings = Settings & JsonObject;
 
-let GpuMetrics: any;
-if (platform() !== 'win32') {
-  GpuMetrics = require('@thompsonnoahe/macos-metrics');
+let macOSMetrics: any;
+if (platform() !== "win32") {
+  macOSMetrics = require("@thompsonnoahe/macos-metrics");
 }
 
 export default class ActionWithChart<
@@ -32,8 +32,8 @@ export default class ActionWithChart<
 > extends SingletonAction<T> {
   buffers: Map<string, Buffer<[number, number]>> = new Map();
   timers: Map<string, NodeJS.Timeout | undefined> = new Map();
-  query = os.platform() === 'win32' ? query : undefined;
-  devices = os.platform() === 'win32' ? this.query.getGpus() : undefined;
+  query = os.platform() === "win32" ? query : undefined;
+  devices = os.platform() === "win32" ? this.query.getGpus() : undefined;
   window = new Window();
 
   getGpu(gpuId: string): Gpu {
@@ -63,24 +63,24 @@ export default class ActionWithChart<
 
     const area = d3
       .area()
-      .x(d => x(d[0]))
+      .x((d) => x(d[0]))
       .y0(height)
-      .y1(d => y(d[1]))
+      .y1((d) => y(d[1]))
       .curve(d3.curveCatmullRom);
 
     // Remove the previous SVG to refresh the drawing
-    svg.selectAll('path').remove();
+    svg.selectAll("path").remove();
 
     svg
-      .append('path')
-      .attr('d', area(buff?.buffer ?? [[Date.now(), gpuMetric]]))
-      .attr('fill', settings.chartColor || '#aaaaaa');
+      .append("path")
+      .attr("d", area(buff?.buffer ?? [[Date.now(), gpuMetric]]))
+      .attr("fill", settings.chartColor || "#aaaaaa");
 
     return svg;
   }
 
   override onKeyDown(ev: KeyDownEvent<T>): Promise<void> | void {
-    if (os.platform() === 'win32') {
+    if (os.platform() === "win32") {
       const gpu = this.getGpu(ev.payload.settings.gpuId);
       gpu?.launchAssociatedApp();
     } else {
@@ -96,7 +96,7 @@ export default class ActionWithChart<
   override onPropertyInspectorDidAppear(
     ev: PropertyInspectorDidAppearEvent<T>
   ): Promise<void> | void {
-    if (os.platform() === 'win32') {
+    if (os.platform() === "win32") {
       const gpus = this.devices.map((gpu: Gpu) => {
         return {
           title: gpu.name,
@@ -104,11 +104,11 @@ export default class ActionWithChart<
         };
       });
       streamDeck.ui.current?.sendToPropertyInspector(gpus);
-    } else if (os.platform() === 'darwin') {
+    } else if (os.platform() === "darwin") {
       const gpus = [
         {
-          title: GpuMetrics.getMetrics(0).name,
-          value: GpuMetrics.getMetrics(0).id,
+          title: macOSMetrics.GpuMetrics.getMetrics(0).name,
+          value: macOSMetrics.GpuMetrics.getMetrics(0).id,
         },
       ];
       streamDeck.ui.current?.sendToPropertyInspector(gpus);
