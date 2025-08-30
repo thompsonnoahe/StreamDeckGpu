@@ -6,7 +6,6 @@ import typescript from "@rollup/plugin-typescript";
 import path from "node:path";
 import url from "node:url";
 import copy from "rollup-plugin-copy";
-import replace from "@rollup/plugin-replace";
 
 const isWatching = !!process.env.ROLLUP_WATCH;
 const sdPlugin = "com.nthompson.gpu.sdPlugin";
@@ -24,23 +23,18 @@ const config = {
         path.resolve(path.dirname(sourcemapPath), relativeSourcePath)
       ).href;
     },
+    inlineDynamicImports: true,
     format: "commonjs",
   },
-  external: "@thompsonnoahe/macos-metrics",
+  external: "@thompsonnoahe/macos-metrics-darwin-arm64",
   plugins: [
-    replace({
-      include: "node_modules\\@thompsonnoahe\\macos-metrics\\*.js",
-      values: {
-        "require = ": "myRequire = ",
-      },
-      preventAssignment: false,
-    }),
     {
       name: "watch-externals",
       buildStart: function () {
         this.addWatchFile(`${sdPlugin}/manifest.json`);
       },
     },
+    commonjs(),
     typescript({
       mapRoot: isWatching ? "./" : undefined,
     }),
@@ -50,7 +44,6 @@ const config = {
       exportConditions: ["node"],
       preferBuiltins: true,
     }),
-    commonjs(),
     !isWatching && terser(),
     {
       name: "emit-module-package-file",
@@ -72,7 +65,7 @@ const config = {
           dest: `${sdPlugin}/bin/`,
         },
         {
-          src: "node_modules/@thompsonnoahe/macos-metrics-darwin-arm64/macos_metrics.darwin-arm64.node",
+          src: "node_modules/@thompsonnoahe/macos-metrics/build/Release/macos_metrics.darwin-arm64.node",
           dest: `${sdPlugin}/bin/`,
         },
       ],

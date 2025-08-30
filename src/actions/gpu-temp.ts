@@ -42,9 +42,9 @@ export class GpuTemp extends ActionWithChart<GpuTempSettings> {
 
     this.timers.set(
       action.id,
-      setInterval(() => {
+      setInterval(async () => {
         if (os.platform() === 'darwin') {
-          gpu = getMacOSMetrics();
+          gpu = await getMacOSMetrics();
         }
 
         if (gpu === undefined) {

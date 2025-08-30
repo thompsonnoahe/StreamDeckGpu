@@ -1,15 +1,13 @@
-import { platform } from "os";
 import { Gpu } from "../types/gpu";
 import Vendor from "../types/vendor";
 import { exec } from "child_process";
 
-let macOSMetrics: any;
-if (platform() !== "win32") {
-  macOSMetrics = require("@thompsonnoahe/macos-metrics");
-}
-
-export default function getMacOSMetrics(samplePeriod: number = 0): Gpu {
-  const metrics = macOSMetrics.GpuMetrics.getMetrics(samplePeriod);
+export default async function getMacOSMetrics(
+  samplePeriod: number = 0
+): Promise<Gpu> {
+  const metrics = (
+    await import("@thompsonnoahe/macos-metrics")
+  ).GpuMetrics.getMetrics(samplePeriod);
   return {
     deviceId: metrics.id,
     name: metrics.name,

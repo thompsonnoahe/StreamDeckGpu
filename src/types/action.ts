@@ -14,6 +14,7 @@ import { Window } from "happy-dom";
 import * as os from "os";
 import getMacOSMetrics from "../utils/converter";
 import { platform } from "os";
+import { GpuMetrics } from "@thompsonnoahe/macos-metrics";
 export class Settings {
   gpuId: string = "";
   chartColor: string = "#aaaaaa";
@@ -21,11 +22,6 @@ export class Settings {
 }
 
 type JsonSettings = Settings & JsonObject;
-
-let macOSMetrics: any;
-if (platform() !== "win32") {
-  macOSMetrics = require("@thompsonnoahe/macos-metrics");
-}
 
 export default class ActionWithChart<
   T extends JsonSettings,
@@ -84,8 +80,7 @@ export default class ActionWithChart<
       const gpu = this.getGpu(ev.payload.settings.gpuId);
       gpu?.launchAssociatedApp();
     } else {
-      const gpu = getMacOSMetrics();
-      gpu.launchAssociatedApp();
+      getMacOSMetrics().then((gpu) => gpu.launchAssociatedApp());
     }
   }
 
@@ -105,13 +100,15 @@ export default class ActionWithChart<
       });
       streamDeck.ui.current?.sendToPropertyInspector(gpus);
     } else if (os.platform() === "darwin") {
-      const gpus = [
-        {
-          title: macOSMetrics.GpuMetrics.getMetrics(0).name,
-          value: macOSMetrics.GpuMetrics.getMetrics(0).id,
-        },
-      ];
-      streamDeck.ui.current?.sendToPropertyInspector(gpus);
+      getMacOSMetrics().then((gpu) => {
+        const gpus = [
+          {
+            title: gpu.name,
+            value: gpu.deviceId,
+          },
+        ];
+        streamDeck.ui.current?.sendToPropertyInspector(gpus);
+      });
     }
   }
 }

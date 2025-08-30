@@ -3,17 +3,17 @@ import streamDeck, {
   DidReceiveSettingsEvent,
   JsonObject,
   WillAppearEvent,
-} from '@elgato/streamdeck';
-import { Gpu } from '../types/gpu';
-import Vendor from '../types/vendor';
-import ActionWithChart, { Settings } from '../types/action';
-import { width, height } from '../utils/constants';
-import Buffer from '../utils/buffer';
-import * as d3 from 'd3';
-import * as os from 'os';
-import getMacOSMetrics from '../utils/converter';
+} from "@elgato/streamdeck";
+import { Gpu } from "../types/gpu";
+import Vendor from "../types/vendor";
+import ActionWithChart, { Settings } from "../types/action";
+import { width, height } from "../utils/constants";
+import Buffer from "../utils/buffer";
+import * as d3 from "d3";
+import * as os from "os";
+import getMacOSMetrics from "../utils/converter";
 
-@action({ UUID: 'com.nthompson.gpu.power' })
+@action({ UUID: "com.nthompson.gpu.power" })
 export class GpuPowerUsage extends ActionWithChart<GpuPowerUsageSettings> {
   startTimer(action: any, settings: GpuPowerUsageSettings, gpu: Gpu): void;
   startTimer(action: any, settings: GpuPowerUsageSettings): void;
@@ -26,19 +26,19 @@ export class GpuPowerUsage extends ActionWithChart<GpuPowerUsageSettings> {
 
     const svg = d3
       .select(this.window.document.body)
-      .append('svg')
-      .attr('width', width)
-      .attr('height', height);
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
 
     this.timers.set(
       action.id,
-      setInterval(() => {
-        if (os.platform() === 'darwin') {
-          gpu = getMacOSMetrics();
+      setInterval(async () => {
+        if (os.platform() === "darwin") {
+          gpu = await getMacOSMetrics();
         }
 
         if (gpu === undefined) {
-          streamDeck.logger.error('GPU not found or selected');
+          streamDeck.logger.error("GPU not found or selected");
           return;
         }
 
@@ -55,8 +55,8 @@ export class GpuPowerUsage extends ActionWithChart<GpuPowerUsageSettings> {
             power,
             settings,
             action,
-            Number.parseInt(settings.minWatts || '0'),
-            Number.parseInt(settings.maxWatts || '300')
+            Number.parseInt(settings.minWatts || "0"),
+            Number.parseInt(settings.maxWatts || "300")
           );
 
           action.setImage(
@@ -64,7 +64,7 @@ export class GpuPowerUsage extends ActionWithChart<GpuPowerUsageSettings> {
           );
         } else {
           // Reset the image if the user flips back between chart or image
-          action.setImage('gpu.png');
+          action.setImage("gpu.png");
         }
 
         action.setTitle(`${Math.round(power)}W`);
@@ -75,7 +75,7 @@ export class GpuPowerUsage extends ActionWithChart<GpuPowerUsageSettings> {
   override onDidReceiveSettings(
     ev: DidReceiveSettingsEvent<GpuPowerUsageSettings>
   ): Promise<void> | void {
-    if (os.platform() !== 'darwin') {
+    if (os.platform() !== "darwin") {
       const gpu = this.getGpu(ev.payload.settings.gpuId);
 
       this.startTimer(ev.action, ev.payload.settings, gpu!);
@@ -87,7 +87,7 @@ export class GpuPowerUsage extends ActionWithChart<GpuPowerUsageSettings> {
   override onWillAppear(
     ev: WillAppearEvent<GpuPowerUsageSettings>
   ): Promise<void> | void {
-    if (os.platform() !== 'darwin') {
+    if (os.platform() !== "darwin") {
       const gpu = this.getGpu(ev.payload.settings.gpuId);
 
       this.startTimer(ev.action, ev.payload.settings, gpu!);
