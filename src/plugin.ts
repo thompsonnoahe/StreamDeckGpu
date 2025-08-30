@@ -1,9 +1,9 @@
-import streamDeck, { LogLevel } from '@elgato/streamdeck';
+import streamDeck, { LogLevel } from "@elgato/streamdeck";
 
-import { GpuUsage } from './actions/gpu-usage';
-import { GpuTemp } from './actions/gpu-temp';
-import { GpuMemoryUsage } from './actions/gpu-mem';
-import { GpuPowerUsage } from './actions/gpu-power';
+import { GpuUsage } from "./actions/gpu-usage";
+import { GpuTemp } from "./actions/gpu-temp";
+import { GpuMemoryUsage } from "./actions/gpu-mem";
+import { GpuPowerUsage } from "./actions/gpu-power";
 
 // We can enable "trace" logging so that all messages between the Stream Deck, and the plugin are recorded. When storing sensitive information
 streamDeck.logger.setLevel(LogLevel.DEBUG);

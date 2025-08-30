@@ -1,4 +1,4 @@
-import Vendor from './vendor';
+import Vendor from "./vendor";
 type Gpu = {
   vendor: Vendor;
   name: string;
@@ -6,8 +6,8 @@ type Gpu = {
   deviceId: string;
   usage: number;
   temperature: number;
-  memory: number;
-  usedMemory: number;
+  memory: number | undefined;
+  usedMemory: number | undefined;
   power: number;
   launchAssociatedApp: () => void;
 };

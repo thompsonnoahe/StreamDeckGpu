@@ -1,7 +1,8 @@
 enum Vendor {
-    Nvidia,
-    Amd,
-    Unknown
+  Nvidia,
+  Amd,
+  Apple,
+  Unknown,
 }
 
 export default Vendor;
