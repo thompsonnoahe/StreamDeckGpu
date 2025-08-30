@@ -3,12 +3,12 @@ import { Gpu } from "../types/gpu";
 import Vendor from "../types/vendor";
 import { exec } from "child_process";
 
-export default function getMacOSMetrics(samplePeriod: number = 1000): Gpu {
+export default function getMacOSMetrics(samplePeriod: number = 0): Gpu {
   const metrics = GpuMetrics.getMetrics(samplePeriod);
   return {
     deviceId: metrics.id,
     name: metrics.name,
-    usage: metrics.gpuUtilization,
+    usage: metrics.gpuUtilization * 100,
     temperature: metrics.temperature,
     usedMemory: undefined,
     memory: undefined,
