@@ -6,8 +6,8 @@ type Gpu = {
   deviceId: string;
   usage: number;
   temperature: number;
-  memory: number | undefined;
-  usedMemory: number | undefined;
+  memory: number;
+  usedMemory: number;
   power: number;
   launchAssociatedApp: () => void;
 };

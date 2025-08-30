@@ -4,15 +4,16 @@ import {
   streamDeck,
   DidReceiveSettingsEvent,
   JsonObject,
-} from '@elgato/streamdeck';
-import { Gpu } from '../types/gpu';
-import Vendor from '../types/vendor';
-import ActionWithChart, { Settings } from '../types/action';
-import { width, height } from '../utils/constants';
-import Buffer from '../utils/buffer';
-import * as d3 from 'd3';
+} from "@elgato/streamdeck";
+import { Gpu } from "../types/gpu";
+import Vendor from "../types/vendor";
+import ActionWithChart, { Settings } from "../types/action";
+import { width, height } from "../utils/constants";
+import Buffer from "../utils/buffer";
+import * as d3 from "d3";
+import { platform } from "os";
 
-@action({ UUID: 'com.nthompson.gpu.mem' })
+@action({ UUID: "com.nthompson.gpu.mem" })
 export class GpuMemoryUsage extends ActionWithChart<GpuMemoryUsageSettings> {
   calculatePercentage(gpu: Gpu): number {
     const percentage = (gpu.usedMemory / gpu.memory) * 100;
@@ -29,15 +30,15 @@ export class GpuMemoryUsage extends ActionWithChart<GpuMemoryUsageSettings> {
 
     const svg = d3
       .select(this.window.document.body)
-      .append('svg')
-      .attr('width', width)
-      .attr('height', height);
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
 
     this.timers.set(
       action.id,
       setInterval(() => {
         if (gpu === undefined) {
-          streamDeck.logger.error('GPU not found or selected');
+          streamDeck.logger.error("GPU not found or selected");
           return;
         }
 
@@ -74,11 +75,11 @@ export class GpuMemoryUsage extends ActionWithChart<GpuMemoryUsageSettings> {
         } else if (settings.showAsPercentage && !settings.enableChart) {
           const percentage = this.calculatePercentage(gpu);
           action.setTitle(`${Math.round(percentage)}%`);
-          action.setImage('gpu.png');
+          action.setImage("gpu.png");
         } else {
           const text = this.formatUsedMemory(gpu);
           action.setTitle(text);
-          action.setImage('gpu.png');
+          action.setImage("gpu.png");
         }
       }, 1000)
     );
@@ -101,17 +102,27 @@ export class GpuMemoryUsage extends ActionWithChart<GpuMemoryUsageSettings> {
   override onDidReceiveSettings(
     ev: DidReceiveSettingsEvent<GpuMemoryUsageSettings>
   ): Promise<void> | void {
-    const gpu = this.getGpu(ev.payload.settings.gpuId);
+    if (platform() === "win32") {
+      const gpu = this.getGpu(ev.payload.settings.gpuId);
 
-    this.startTimer(gpu!, ev.action, ev.payload.settings);
+      this.startTimer(gpu!, ev.action, ev.payload.settings);
+    } else {
+      ev.action.showAlert();
+      ev.action.setTitle("Unsupported");
+    }
   }
 
   override onWillAppear(
     ev: WillAppearEvent<GpuMemoryUsageSettings>
   ): Promise<void> | void {
-    const gpu = this.getGpu(ev.payload.settings.gpuId);
+    if (platform() === "win32") {
+      const gpu = this.getGpu(ev.payload.settings.gpuId);
 
-    this.startTimer(gpu!, ev.action, ev.payload.settings);
+      this.startTimer(gpu!, ev.action, ev.payload.settings);
+    } else {
+      ev.action.showAlert();
+      ev.action.setTitle("Unsupported");
+    }
   }
 }
 

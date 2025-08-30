@@ -10,8 +10,8 @@ export default function getMacOSMetrics(samplePeriod: number = 0): Gpu {
     name: metrics.name,
     usage: metrics.gpuUtilization * 100,
     temperature: metrics.temperature,
-    usedMemory: undefined,
-    memory: undefined,
+    usedMemory: -1,
+    memory: -1,
     power: metrics.powerUsage,
     vendor: Vendor.Apple,
     launchAssociatedApp: function (): void {
