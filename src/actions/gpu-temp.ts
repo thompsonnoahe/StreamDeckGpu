@@ -4,16 +4,16 @@ import {
   streamDeck,
   DidReceiveSettingsEvent,
   JsonObject,
-} from "@elgato/streamdeck";
-import { Gpu } from "../types/gpu";
-import ActionWithChart, { Settings } from "../types/action";
-import { height, width } from "../utils/constants";
-import Buffer from "../utils/buffer";
-import * as d3 from "d3";
-import * as os from "os";
-import getMacOSMetrics from "../utils/converter";
+} from '@elgato/streamdeck';
+import { Gpu } from '../types/gpu';
+import ActionWithChart, { Settings } from '../types/action';
+import { height, width } from '../utils/constants';
+import Buffer from '../utils/buffer';
+import * as d3 from 'd3';
+import * as os from 'os';
+import getMacOSMetrics from '../utils/converter';
 
-@action({ UUID: "com.nthompson.gpu.temp" })
+@action({ UUID: 'com.nthompson.gpu.temp' })
 export class GpuTemp extends ActionWithChart<GpuTempSettings> {
   startTimer(action: any, celsius: boolean, settings: GpuTempSettings): void;
   startTimer(
@@ -36,23 +36,20 @@ export class GpuTemp extends ActionWithChart<GpuTempSettings> {
 
     const svg = d3
       .select(this.window.document.body)
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height);
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height);
 
     this.timers.set(
       action.id,
       setInterval(() => {
-        if (gpu === undefined && os.platform() === "win32") {
-          streamDeck.logger.error("GPU not found or selected");
+        if (gpu === undefined) {
+          streamDeck.logger.error('GPU not found or selected');
           return;
         }
 
-        if (os.platform() === "darwin") {
+        if (os.platform() === 'darwin') {
           gpu = getMacOSMetrics();
-        } else {
-          streamDeck.logger.error("Unsupported platform.");
-          return;
         }
 
         let temp = gpu?.temperature;
@@ -66,7 +63,7 @@ export class GpuTemp extends ActionWithChart<GpuTempSettings> {
           temp = (temp * 9) / 5 + 32;
         }
 
-        action.setTitle(`${Math.round(temp)}°${celsius ? "C" : "F"}`);
+        action.setTitle(`${Math.round(temp)}°${celsius ? 'C' : 'F'}`);
 
         if (settings.enableChart) {
           const chart = this.createChart(
@@ -74,8 +71,8 @@ export class GpuTemp extends ActionWithChart<GpuTempSettings> {
             Math.round(temp),
             settings,
             action,
-            Number.parseInt(settings.minTemp || "0"),
-            Number.parseInt(settings.maxTemp || "100")
+            Number.parseInt(settings.minTemp || '0'),
+            Number.parseInt(settings.maxTemp || '100')
           );
 
           action.setImage(
@@ -83,7 +80,7 @@ export class GpuTemp extends ActionWithChart<GpuTempSettings> {
           );
         } else {
           // Reset the image if the user flips back between chart or image
-          action.setImage("gpu.png");
+          action.setImage('gpu.png');
         }
       }, 1000)
     );
@@ -94,11 +91,11 @@ export class GpuTemp extends ActionWithChart<GpuTempSettings> {
   ): Promise<void> | void {
     let celsius = true;
 
-    if (ev.payload.settings.temp === "fahrenheit") {
+    if (ev.payload.settings.temp === 'fahrenheit') {
       celsius = false;
     }
 
-    if (os.platform() !== "darwin") {
+    if (os.platform() !== 'darwin') {
       const gpu = this.getGpu(ev.payload.settings.gpuId);
       this.startTimer(ev.action, celsius, ev.payload.settings, gpu!);
     } else {
@@ -111,11 +108,11 @@ export class GpuTemp extends ActionWithChart<GpuTempSettings> {
   ): Promise<void> | void {
     let celsius = true;
 
-    if (ev.payload.settings.temp === "fahrenheit") {
+    if (ev.payload.settings.temp === 'fahrenheit') {
       celsius = false;
     }
 
-    if (os.platform() !== "darwin") {
+    if (os.platform() !== 'darwin') {
       const gpu = this.getGpu(ev.payload.settings.gpuId);
       this.startTimer(ev.action, celsius, ev.payload.settings, gpu!);
     } else {

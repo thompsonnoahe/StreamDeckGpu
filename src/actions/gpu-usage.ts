@@ -4,16 +4,16 @@ import {
   streamDeck,
   DidReceiveSettingsEvent,
   JsonObject,
-} from "@elgato/streamdeck";
-import { Gpu } from "../types/gpu";
-import * as d3 from "d3";
-import * as os from "os";
-import Buffer from "../utils/buffer";
-import { width, height } from "../utils/constants";
-import ActionWithChart, { Settings } from "../types/action";
-import getMacOSMetrics from "../utils/converter";
+} from '@elgato/streamdeck';
+import { Gpu } from '../types/gpu';
+import * as d3 from 'd3';
+import * as os from 'os';
+import Buffer from '../utils/buffer';
+import { width, height } from '../utils/constants';
+import ActionWithChart, { Settings } from '../types/action';
+import getMacOSMetrics from '../utils/converter';
 
-@action({ UUID: "com.nthompson.gpu.usage" })
+@action({ UUID: 'com.nthompson.gpu.usage' })
 export class GpuUsage extends ActionWithChart<GpuUsageSettings> {
   startTimer(action: any, settings: GpuUsageSettings, gpu: Gpu): void;
   startTimer(action: any, settings: GpuUsageSettings): void;
@@ -27,23 +27,20 @@ export class GpuUsage extends ActionWithChart<GpuUsageSettings> {
 
     const svg = d3
       .select(this.window.document.body)
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height);
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height);
 
     this.timers.set(
       action.id,
       setInterval(() => {
-        if (gpu === undefined && os.platform() === "win32") {
-          streamDeck.logger.error("GPU not found or selected");
+        if (gpu === undefined) {
+          streamDeck.logger.error('GPU not found or selected');
           return;
         }
 
-        if (os.platform() === "darwin") {
+        if (os.platform() === 'darwin') {
           gpu = getMacOSMetrics();
-        } else {
-          streamDeck.logger.error("Unsupported platform.");
-          return;
         }
 
         // -1 indicates an error
@@ -67,7 +64,7 @@ export class GpuUsage extends ActionWithChart<GpuUsageSettings> {
           );
         } else {
           // Reset the image if the user flips back between chart or image
-          action.setImage("gpu.png");
+          action.setImage('gpu.png');
         }
       }, 1000)
     );
@@ -76,7 +73,7 @@ export class GpuUsage extends ActionWithChart<GpuUsageSettings> {
   override onDidReceiveSettings(
     ev: DidReceiveSettingsEvent<GpuUsageSettings>
   ): Promise<void> | void {
-    if (os.platform() !== "darwin") {
+    if (os.platform() !== 'darwin') {
       const gpu = this.getGpu(ev.payload.settings.gpuId);
 
       this.startTimer(ev.action, ev.payload.settings, gpu!);
@@ -88,7 +85,7 @@ export class GpuUsage extends ActionWithChart<GpuUsageSettings> {
   override onWillAppear(
     ev: WillAppearEvent<GpuUsageSettings>
   ): Promise<void> | void {
-    if (os.platform() !== "darwin") {
+    if (os.platform() !== 'darwin') {
       const gpu = this.getGpu(ev.payload.settings.gpuId);
 
       this.startTimer(ev.action, ev.payload.settings, gpu!);

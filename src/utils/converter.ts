@@ -1,7 +1,12 @@
-import { GpuMetrics } from "@thompsonnoahe/macos-metrics";
-import { Gpu } from "../types/gpu";
-import Vendor from "../types/vendor";
-import { exec } from "child_process";
+import { platform } from 'os';
+import { Gpu } from '../types/gpu';
+import Vendor from '../types/vendor';
+import { exec } from 'child_process';
+
+let GpuMetrics: any;
+if (platform() !== 'win32') {
+  GpuMetrics = require('@thompsonnoahe/macos-metrics');
+}
 
 export default function getMacOSMetrics(samplePeriod: number = 0): Gpu {
   const metrics = GpuMetrics.getMetrics(samplePeriod);
