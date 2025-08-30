@@ -6,9 +6,7 @@ import typescript from "@rollup/plugin-typescript";
 import path from "node:path";
 import url from "node:url";
 import copy from "rollup-plugin-copy";
-import nativePlugin from "rollup-plugin-natives";
 import replace from "@rollup/plugin-replace";
-import { name } from "happy-dom/cjs/PropertySymbol.cjs";
 
 const isWatching = !!process.env.ROLLUP_WATCH;
 const sdPlugin = "com.nthompson.gpu.sdPlugin";
