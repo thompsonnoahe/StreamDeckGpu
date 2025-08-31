@@ -1,27 +1,19 @@
 import {
   action,
-  PropertyInspectorDidAppearEvent,
-  SingletonAction,
   WillAppearEvent,
   streamDeck,
   DidReceiveSettingsEvent,
-  KeyDownEvent,
-  WillDisappearEvent,
+  JsonObject,
 } from '@elgato/streamdeck';
-import query from '../query';
 import { Gpu } from '../types/gpu';
 import Vendor from '../types/vendor';
+import ActionWithChart, { Settings } from '../types/action';
+import { width, height } from '../utils/constants';
+import Buffer from '../utils/buffer';
+import * as d3 from 'd3';
 
 @action({ UUID: 'com.nthompson.gpu.mem' })
-export class GpuMemoryUsage extends SingletonAction<GpuMemoryUsageSettings> {
-  timers: Map<string, NodeJS.Timeout> = new Map();
-  query = query;
-  devices = this.query.getGpus();
-
-  getGpu(gpuId: string): Gpu | undefined {
-    return this.devices.find((gpu: Gpu) => gpu.deviceId === gpuId);
-  }
-
+export class GpuMemoryUsage extends ActionWithChart<GpuMemoryUsageSettings> {
   calculatePercentage(gpu: Gpu): number {
     const percentage = (gpu.usedMemory / gpu.memory) * 100;
 
@@ -32,6 +24,14 @@ export class GpuMemoryUsage extends SingletonAction<GpuMemoryUsageSettings> {
     if (this.timers.has(action.id)) {
       clearInterval(this.timers.get(action.id));
     }
+
+    this.buffers.set(action.id, new Buffer<[number, number]>(width));
+
+    const svg = d3
+      .select(this.window.document.body)
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height);
 
     this.timers.set(
       action.id,
@@ -46,14 +46,39 @@ export class GpuMemoryUsage extends SingletonAction<GpuMemoryUsageSettings> {
           return;
         }
 
-        const asPercent = settings.showAsPercentage === 'true';
-
-        if (asPercent) {
+        if (settings.showAsPercentage && settings.enableChart) {
           const percentage = this.calculatePercentage(gpu);
           action.setTitle(`${Math.round(percentage)}%`);
+
+          const chart = this.createChart(svg, percentage, settings, action);
+
+          action.setImage(
+            `data:image/svg+xml;charset=utf8,${encodeURIComponent(chart.node())}`
+          );
+        } else if (!settings.showAsPercentage && settings.enableChart) {
+          const text = this.formatUsedMemory(gpu);
+          action.setTitle(text);
+
+          const chart = this.createChart(
+            svg,
+            gpu.usedMemory,
+            settings,
+            action,
+            0,
+            gpu.memory
+          );
+
+          action.setImage(
+            `data:image/svg+xml;charset=utf8,${encodeURIComponent(chart.node())}`
+          );
+        } else if (settings.showAsPercentage && !settings.enableChart) {
+          const percentage = this.calculatePercentage(gpu);
+          action.setTitle(`${Math.round(percentage)}%`);
+          action.setImage('gpu.png');
         } else {
           const text = this.formatUsedMemory(gpu);
           action.setTitle(text);
+          action.setImage('gpu.png');
         }
       }, 1000)
     );
@@ -81,26 +106,6 @@ export class GpuMemoryUsage extends SingletonAction<GpuMemoryUsageSettings> {
     this.startTimer(gpu!, ev.action, ev.payload.settings);
   }
 
-  override onPropertyInspectorDidAppear(
-    ev: PropertyInspectorDidAppearEvent<GpuMemoryUsageSettings>
-  ): Promise<void> | void {
-    const gpus = this.devices.map((gpu: Gpu) => {
-      return {
-        title: gpu.name,
-        value: gpu.deviceId,
-      };
-    });
-
-    streamDeck.ui.current?.sendToPropertyInspector(gpus);
-  }
-
-  override onKeyDown(
-    ev: KeyDownEvent<GpuMemoryUsageSettings>
-  ): Promise<void> | void {
-    let gpu = this.getGpu(ev.payload.settings.gpuId);
-    gpu?.launchAssociatedApp();
-  }
-
   override onWillAppear(
     ev: WillAppearEvent<GpuMemoryUsageSettings>
   ): Promise<void> | void {
@@ -108,15 +113,9 @@ export class GpuMemoryUsage extends SingletonAction<GpuMemoryUsageSettings> {
 
     this.startTimer(gpu!, ev.action, ev.payload.settings);
   }
-
-  override onWillDisappear(
-    ev: WillDisappearEvent<GpuMemoryUsageSettings>
-  ): void {
-    clearInterval(this.timers.get(ev.action.id));
-  }
 }
 
 type GpuMemoryUsageSettings = {
-  gpuId: string;
-  showAsPercentage: string;
-};
+  showAsPercentage: boolean;
+} & Settings &
+  JsonObject;

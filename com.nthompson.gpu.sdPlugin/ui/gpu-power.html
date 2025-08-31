@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head lang="en">
     <title>GPU Metrics</title>
@@ -16,8 +16,52 @@
       >
       </sdpi-select>
     </sdpi-item>
+    <sdpi-item>
+      <sdpi-checkbox
+        id="chartCheckbox"
+        setting="enableChart"
+        label="Enable chart"
+      ></sdpi-checkbox>
+    </sdpi-item>
+    <sdpi-item label="Chart Color">
+      <sdpi-color
+        default="#aaaaaa"
+        class="control"
+        setting="chartColor"
+      ></sdpi-color>
+    </sdpi-item>
+    <sdpi-item label="Minimum Wattage">
+      <sdpi-textfield
+        class="control"
+        setting="minWatts"
+        pattern="^(0|[1-9][0-9]*)$"
+        placeholder="0"
+        maxLength="3"
+      >
+      </sdpi-textfield>
+    </sdpi-item>
+    <sdpi-item label="Maximum Wattage">
+      <sdpi-textfield
+        class="control"
+        setting="maxWatts"
+        pattern="^(0|[1-9][0-9]*)$"
+        placeholder="300"
+        maxLength="3"
+      >
+      </sdpi-textfield>
+    </sdpi-item>
+
     <script>
       const { streamDeckClient } = SDPIComponents;
+
+      const control = document
+        .getElementById('chartCheckbox')
+        .addEventListener('valuechange', e => {
+          const controls = document.querySelectorAll('.control');
+          controls.forEach(c => {
+            c.disabled = !e.target.value;
+          });
+        });
 
       streamDeckClient.sendToPropertyInspector.subscribe(e => {
         const devices = document.getElementById('devices');

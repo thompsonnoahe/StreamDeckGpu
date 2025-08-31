@@ -1,30 +1,30 @@
 import streamDeck, {
   action,
   DidReceiveSettingsEvent,
-  KeyDownEvent,
-  PropertyInspectorDidAppearEvent,
-  SingletonAction,
+  JsonObject,
   WillAppearEvent,
-  WillDisappearEvent,
 } from '@elgato/streamdeck';
-import query from '../query';
 import { Gpu } from '../types/gpu';
 import Vendor from '../types/vendor';
+import ActionWithChart, { Settings } from '../types/action';
+import { width, height } from '../utils/constants';
+import Buffer from '../utils/buffer';
+import * as d3 from 'd3';
 
 @action({ UUID: 'com.nthompson.gpu.power' })
-export class GpuPowerUsage extends SingletonAction<GpuPowerUsageSettings> {
-  timers: Map<string, NodeJS.Timeout> = new Map();
-  query = query;
-  devices = this.query.getGpus();
-
-  getGpu(gpuId: string): Gpu | undefined {
-    return this.devices.find((gpu: Gpu) => gpu.deviceId === gpuId);
-  }
-
-  startTimer(gpu: Gpu, action: any) {
+export class GpuPowerUsage extends ActionWithChart<GpuPowerUsageSettings> {
+  startTimer(gpu: Gpu, action: any, settings: GpuPowerUsageSettings) {
     if (this.timers.has(action.id)) {
       clearInterval(this.timers.get(action.id));
     }
+
+    this.buffers.set(action.id, new Buffer<[number, number]>(width));
+
+    const svg = d3
+      .select(this.window.document.body)
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height);
 
     this.timers.set(
       action.id,
@@ -46,6 +46,24 @@ export class GpuPowerUsage extends SingletonAction<GpuPowerUsageSettings> {
           power /= 1000;
         }
 
+        if (settings.enableChart) {
+          const chart = this.createChart(
+            svg,
+            power,
+            settings,
+            action,
+            Number.parseInt(settings.minWatts || '0'),
+            Number.parseInt(settings.maxWatts || '300')
+          );
+
+          action.setImage(
+            `data:image/svg+xml;charset=utf8,${encodeURIComponent(chart.node())}`
+          );
+        } else {
+          // Reset the image if the user flips back between chart or image
+          action.setImage('gpu.png');
+        }
+
         action.setTitle(`${Math.round(power)}W`);
       }, 1000)
     );
@@ -56,27 +74,7 @@ export class GpuPowerUsage extends SingletonAction<GpuPowerUsageSettings> {
   ): Promise<void> | void {
     const gpu = this.getGpu(ev.payload.settings.gpuId);
 
-    this.startTimer(gpu!, ev.action);
-  }
-
-  override onKeyDown(
-    ev: KeyDownEvent<GpuPowerUsageSettings>
-  ): Promise<void> | void {
-    let gpu = this.getGpu(ev.payload.settings.gpuId);
-    gpu?.launchAssociatedApp();
-  }
-
-  override onPropertyInspectorDidAppear(
-    ev: PropertyInspectorDidAppearEvent<GpuPowerUsageSettings>
-  ): Promise<void> | void {
-    const gpus = this.devices.map((gpu: Gpu) => {
-      return {
-        title: gpu.name,
-        value: gpu.deviceId,
-      };
-    });
-
-    streamDeck.ui.current?.sendToPropertyInspector(gpus);
+    this.startTimer(gpu!, ev.action, ev.payload.settings);
   }
 
   override onWillAppear(
@@ -84,16 +82,12 @@ export class GpuPowerUsage extends SingletonAction<GpuPowerUsageSettings> {
   ): Promise<void> | void {
     const gpu = this.getGpu(ev.payload.settings.gpuId);
 
-    this.startTimer(gpu!, ev.action);
-  }
-
-  override onWillDisappear(
-    ev: WillDisappearEvent<GpuPowerUsageSettings>
-  ): void {
-    clearInterval(this.timers.get(ev.action.id));
+    this.startTimer(gpu!, ev.action, ev.payload.settings);
   }
 }
 
 type GpuPowerUsageSettings = {
-  gpuId: string;
-};
+  minWatts: string;
+  maxWatts: string;
+} & Settings &
+  JsonObject;
