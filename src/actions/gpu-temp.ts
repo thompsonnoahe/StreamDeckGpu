@@ -10,14 +10,23 @@ import ActionWithChart, { Settings } from '../types/action';
 import { height, width } from '../utils/constants';
 import Buffer from '../utils/buffer';
 import * as d3 from 'd3';
+import * as os from 'os';
+import getMacOSMetrics from '../utils/converter';
 
 @action({ UUID: 'com.nthompson.gpu.temp' })
 export class GpuTemp extends ActionWithChart<GpuTempSettings> {
+  startTimer(action: any, celsius: boolean, settings: GpuTempSettings): void;
   startTimer(
-    gpu: Gpu,
+    action: any,
+    celsius: boolean,
+    settings: GpuTempSettings,
+    gpu: Gpu
+  ): void;
+  startTimer(
     action: any,
     celsius: boolean = true,
-    settings: GpuTempSettings
+    settings: GpuTempSettings,
+    gpu?: Gpu
   ): void {
     if (this.timers.has(action.id)) {
       clearInterval(this.timers.get(action.id)!);
@@ -33,7 +42,11 @@ export class GpuTemp extends ActionWithChart<GpuTempSettings> {
 
     this.timers.set(
       action.id,
-      setInterval(() => {
+      setInterval(async () => {
+        if (os.platform() === 'darwin') {
+          gpu = await getMacOSMetrics();
+        }
+
         if (gpu === undefined) {
           streamDeck.logger.error('GPU not found or selected');
           return;
@@ -50,12 +63,12 @@ export class GpuTemp extends ActionWithChart<GpuTempSettings> {
           temp = (temp * 9) / 5 + 32;
         }
 
-        action.setTitle(`${temp}°${celsius ? 'C' : 'F'}`);
+        action.setTitle(`${Math.round(temp)}°${celsius ? 'C' : 'F'}`);
 
         if (settings.enableChart) {
           const chart = this.createChart(
             svg,
-            temp,
+            Math.round(temp),
             settings,
             action,
             Number.parseInt(settings.minTemp || '0'),
@@ -76,29 +89,35 @@ export class GpuTemp extends ActionWithChart<GpuTempSettings> {
   override onDidReceiveSettings(
     ev: DidReceiveSettingsEvent<GpuTempSettings>
   ): Promise<void> | void {
-    const gpu = this.getGpu(ev.payload.settings.gpuId);
-
     let celsius = true;
 
     if (ev.payload.settings.temp === 'fahrenheit') {
       celsius = false;
     }
 
-    this.startTimer(gpu!, ev.action, celsius, ev.payload.settings);
+    if (os.platform() !== 'darwin') {
+      const gpu = this.getGpu(ev.payload.settings.gpuId);
+      this.startTimer(ev.action, celsius, ev.payload.settings, gpu!);
+    } else {
+      this.startTimer(ev.action, celsius, ev.payload.settings);
+    }
   }
 
   override onWillAppear(
     ev: WillAppearEvent<GpuTempSettings>
   ): Promise<void> | void {
-    const gpu = this.getGpu(ev.payload.settings.gpuId);
-
     let celsius = true;
 
     if (ev.payload.settings.temp === 'fahrenheit') {
       celsius = false;
     }
 
-    this.startTimer(gpu!, ev.action, celsius, ev.payload.settings);
+    if (os.platform() !== 'darwin') {
+      const gpu = this.getGpu(ev.payload.settings.gpuId);
+      this.startTimer(ev.action, celsius, ev.payload.settings, gpu!);
+    } else {
+      this.startTimer(ev.action, celsius, ev.payload.settings);
+    }
   }
 }
 

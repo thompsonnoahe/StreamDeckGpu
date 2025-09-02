@@ -1,6 +1,6 @@
 {
 	"Name": "GPU Metrics",
-	"Version": "2.1.0.0",
+	"Version": "2.2.0.0",
 	"Author": "Noah Thompson",
 	"Actions": [
 		{
@@ -85,6 +85,10 @@
 		{
 			"Platform": "windows",
 			"MinimumVersion": "10"
+		},
+		{
+			"Platform": "mac",
+			"MinimumVersion": "13"
 		}
 	],
 	"Nodejs": {

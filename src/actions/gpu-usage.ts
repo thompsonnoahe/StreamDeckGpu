@@ -4,16 +4,20 @@ import {
   streamDeck,
   DidReceiveSettingsEvent,
   JsonObject,
-} from '@elgato/streamdeck';
-import { Gpu } from '../types/gpu';
-import * as d3 from 'd3';
-import Buffer from '../utils/buffer';
-import { width, height } from '../utils/constants';
-import ActionWithChart, { Settings } from '../types/action';
+} from "@elgato/streamdeck";
+import { Gpu } from "../types/gpu";
+import * as d3 from "d3";
+import * as os from "os";
+import Buffer from "../utils/buffer";
+import { width, height } from "../utils/constants";
+import ActionWithChart, { Settings } from "../types/action";
+import getMacOSMetrics from "../utils/converter";
 
-@action({ UUID: 'com.nthompson.gpu.usage' })
+@action({ UUID: "com.nthompson.gpu.usage" })
 export class GpuUsage extends ActionWithChart<GpuUsageSettings> {
-  startTimer(gpu: Gpu, action: any, settings: GpuUsageSettings): void {
+  startTimer(action: any, settings: GpuUsageSettings, gpu: Gpu): void;
+  startTimer(action: any, settings: GpuUsageSettings): void;
+  startTimer(action: any, settings: GpuUsageSettings, gpu?: Gpu): void {
     // Clear the timer for the action if it's replaced
     if (this.timers.has(action.id)) {
       clearInterval(this.timers.get(action.id));
@@ -23,15 +27,19 @@ export class GpuUsage extends ActionWithChart<GpuUsageSettings> {
 
     const svg = d3
       .select(this.window.document.body)
-      .append('svg')
-      .attr('width', width)
-      .attr('height', height);
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
 
     this.timers.set(
       action.id,
-      setInterval(() => {
+      setInterval(async () => {
+        if (os.platform() === "darwin") {
+          gpu = await getMacOSMetrics();
+        }
+
         if (gpu === undefined) {
-          streamDeck.logger.error('GPU not found or selected');
+          streamDeck.logger.error("GPU not found or selected");
           return;
         }
 
@@ -41,17 +49,22 @@ export class GpuUsage extends ActionWithChart<GpuUsageSettings> {
           return;
         }
 
-        action.setTitle(`${gpu?.usage}%`);
+        action.setTitle(`${Math.round(gpu?.usage)}%`);
 
         if (settings.enableChart) {
-          const chart = this.createChart(svg, gpu?.usage, settings, action);
+          const chart = this.createChart(
+            svg,
+            Math.round(gpu?.usage),
+            settings,
+            action
+          );
 
           action.setImage(
             `data:image/svg+xml;charset=utf8,${encodeURIComponent(chart.node())}`
           );
         } else {
           // Reset the image if the user flips back between chart or image
-          action.setImage('gpu.png');
+          action.setImage("gpu.png");
         }
       }, 1000)
     );
@@ -60,16 +73,25 @@ export class GpuUsage extends ActionWithChart<GpuUsageSettings> {
   override onDidReceiveSettings(
     ev: DidReceiveSettingsEvent<GpuUsageSettings>
   ): Promise<void> | void {
-    const gpu = this.getGpu(ev.payload.settings.gpuId);
+    if (os.platform() !== "darwin") {
+      const gpu = this.getGpu(ev.payload.settings.gpuId);
 
-    this.startTimer(gpu!, ev.action, ev.payload.settings);
+      this.startTimer(ev.action, ev.payload.settings, gpu!);
+    } else {
+      this.startTimer(ev.action, ev.payload.settings);
+    }
   }
 
   override onWillAppear(
     ev: WillAppearEvent<GpuUsageSettings>
   ): Promise<void> | void {
-    const gpu = this.getGpu(ev.payload.settings.gpuId);
-    this.startTimer(gpu!, ev.action, ev.payload.settings);
+    if (os.platform() !== "darwin") {
+      const gpu = this.getGpu(ev.payload.settings.gpuId);
+
+      this.startTimer(ev.action, ev.payload.settings, gpu!);
+    } else {
+      this.startTimer(ev.action, ev.payload.settings);
+    }
   }
 }
 

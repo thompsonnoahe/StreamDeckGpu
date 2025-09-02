@@ -1,4 +1,4 @@
-import Vendor from './vendor';
+import Vendor from "./vendor";
 type Gpu = {
   vendor: Vendor;
   name: string;

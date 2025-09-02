@@ -1,6 +1,7 @@
 const require = createRequire(import.meta.url);
-import { createRequire } from 'node:module';
-import streamDeck from '@elgato/streamdeck';
+import { createRequire } from "node:module";
+import streamDeck from "@elgato/streamdeck";
+import * as os from "os";
 
 enum LogLevel {
   Error,
@@ -9,11 +10,11 @@ enum LogLevel {
   Debug,
 }
 
-const gpuAddon = require('./gpu.node');
+const gpuAddon = os.platform() === "win32" ? require("./gpu.node") : null;
 
-const query = new gpuAddon.GpuQuery();
+const query = os.platform() === "win32" ? new gpuAddon.GpuQuery() : null;
 
-gpuAddon.logCallback((level: number, message: string) => {
+gpuAddon?.logCallback((level: number, message: string) => {
   switch (level) {
     case LogLevel.Error:
       streamDeck.logger.error(message);
